@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>“Publish to Web” 功能UI设计稿</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5;
+        }
+        .tab-button.active {
+            border-color: #2563eb;
+            color: #2563eb;
+            background-color: #dbeafe;
+        }
+        .tab-pane {
+            display: none;
+        }
+        .tab-pane.active {
+            display: block;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <div class="max-w-7xl mx-auto">
+        <h1 class="text-2xl md:text-3xl font-bold text-gray-800 mb-6">“Publish to Web” 功能UI设计稿</h1>
+
+        <!-- Tab 导航 -->
+        <div class="mb-6 border-b border-gray-200">
+            <nav class="-mb-px flex space-x-4" aria-label="Tabs">
+                <button onclick="changeTab(event, 'landing')" class="tab-button active whitespace-nowrap py-3 px-4 border-b-2 font-semibold text-sm text-gray-500 hover:border-gray-300">1. 功能落地页 (安卓)</button>
+                <button onclick="changeTab(event, 'webview')" class="tab-button whitespace-nowrap py-3 px-4 border-b-2 font-semibold text-sm text-gray-500 hover:border-gray-300">2. WebView预览页 (安卓)</button>
+                <button onclick="changeTab(event, 'history')" class="tab-button whitespace-nowrap py-3 px-4 border-b-2 font-semibold text-sm text-gray-500 hover:border-gray-300">3. 历史记录页 (安卓)</button>
+                <button onclick="changeTab(event, 'shared')" class="tab-button whitespace-nowrap py-3 px-4 border-b-2 font-semibold text-sm text-gray-500 hover:border-gray-300">4. 分享查看页 (PC浏览器)</button>
+            </nav>
+        </div>
+
+        <!-- Tab 内容 -->
+        <div id="tab-content">
+            <!-- 1. 功能落地页 -->
+            <div id="landing" class="tab-pane active">
+                <div class="flex flex-col items-center">
+                    <p class="text-gray-600 mb-4">设备尺寸: 400x890px</p>
+                    <div class="w-[400px] h-[890px] bg-white rounded-[40px] shadow-2xl border-8 border-gray-800 overflow-hidden">
+                        <div class="flex flex-col h-full">
+                            <!-- 状态栏 -->
+                            <div class="flex justify-between items-center px-6 pt-4">
+                                <span class="text-sm font-semibold">9:41</span>
+                                <div class="flex items-center space-x-1">
+                                    <i data-lucide="signal" class="w-4 h-4"></i>
+                                    <i data-lucide="wifi" class="w-4 h-4"></i>
+                                    <i data-lucide="battery-full" class="w-5 h-5"></i>
+                                </div>
+                            </div>
+                            <!-- App 导航栏 -->
+                            <div class="flex justify-between items-center p-4">
+                                <i data-lucide="arrow-left" class="w-6 h-6 text-gray-700"></i>
+                                <h2 class="text-lg font-semibold text-gray-800">Publish to Web</h2>
+                                <button onclick="alert('跳转到历史记录页面')" class="text-sm font-medium text-blue-600">History</button>
+                            </div>
+                            <!-- 主内容区 -->
+                            <div class="flex-grow flex flex-col justify-between items-center p-8 text-center bg-gray-50">
+                                <div class="mt-12">
+                                    <div class="w-32 h-32 bg-gradient-to-br from-blue-100 to-indigo-200 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
+                                        <!-- 新的Logo -->
+                                        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="text-blue-600">
+                                            <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" fill="#dbeafe"/>
+                                            <path d="M14 2v6h6" stroke="#4f46e5" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                            <path d="M9.5 13.5c1.83 0 3.5-1.07 3.5-2.5s-1.67-2.5-3.5-2.5-3.5 1.07-3.5 2.5 1.67 2.5 3.5 2.5z" stroke="#2563eb" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                            <path d="M12.99 13.5a6.5 6.5 0 0 1-7 0" stroke="#2563eb" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                            <path d="M16.5 17.5c0-2.2-2.91-4-6.5-4s-6.5 1.8-6.5 4" stroke="#2563eb" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                        </svg>
+                                    </div>
+                                    <h1 class="text-2xl font-bold text-gray-900">Turn Documents into<br>Shareable Web Pages</h1>
+                                    <p class="text-gray-600 mt-3">Instantly convert your Word, PPT, Excel, or PDF files into beautiful, interactive web pages with one click.</p>
+                                </div>
+                                <div class="w-full pb-8">
+                                    <button class="w-full bg-blue-600 text-white font-semibold py-4 rounded-xl shadow-lg hover:bg-blue-700 transition-colors">
+                                        Select Document
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. WebView预览页 -->
+            <div id="webview" class="tab-pane">
+                <div class="flex flex-col items-center">
+                    <p class="text-gray-600 mb-4">设备尺寸: 400x890px</p>
+                    <div class="w-[400px] h-[890px] bg-white rounded-[40px] shadow-2xl border-8 border-gray-800 overflow-hidden relative">
+                        <div class="flex flex-col h-full">
+                            <!-- 状态栏 -->
+                            <div class="flex justify-between items-center px-6 pt-4">
+                                <span class="text-sm font-semibold">9:42</span>
+                                <div class="flex items-center space-x-1">
+                                    <i data-lucide="signal" class="w-4 h-4"></i>
+                                    <i data-lucide="wifi" class="w-4 h-4"></i>
+                                    <i data-lucide="battery-full" class="w-5 h-5"></i>
+                                </div>
+                            </div>
+                            <!-- App 导航栏 -->
+                            <div class="flex justify-between items-center p-4 border-b">
+                                <i data-lucide="arrow-left" class="w-6 h-6 text-gray-700"></i>
+                                <h2 class="text-lg font-semibold text-gray-800 truncate px-2">Q2 Sales Report.pptx</h2>
+                                <!-- 右上角按钮已更新 -->
+                                <button onclick="alert('跳转到历史记录页面')" class="text-sm font-medium text-blue-600">History</button>
+                            </div>
+                            <!-- WebView 内容 -->
+                            <div class="flex-grow overflow-y-auto bg-gray-100 p-4">
+                                <div class="bg-white p-6 rounded-lg shadow mb-4">
+                                    <h1 class="text-xl font-bold text-gray-900">Q2 Sales Performance</h1>
+                                    <p class="text-sm text-gray-500">A Deep Dive into Regional Growth</p>
+                                </div>
+                                <div class="bg-white p-6 rounded-lg shadow mb-4">
+                                    <h2 class="text-lg font-semibold text-gray-800 mb-2">Key Takeaways</h2>
+                                    <ul class="list-disc list-inside text-gray-600 space-y-1 text-sm">
+                                        <li>Overall revenue increased by 15% QoQ.</li>
+                                        <li>North America remains the top market.</li>
+                                        <li>APAC region shows highest growth rate at 35%.</li>
+                                    </ul>
+                                </div>
+                                <div class="bg-white p-6 rounded-lg shadow">
+                                    <h2 class="text-lg font-semibold text-gray-800 mb-2">Revenue by Region</h2>
+                                    <!-- 简化的图表示例 -->
+                                    <div class="space-y-2">
+                                        <div class="flex items-center">
+                                            <span class="w-20 text-sm text-gray-600">North America</span>
+                                            <div class="w-full bg-gray-200 rounded-full h-4">
+                                                <div class="bg-blue-500 h-4 rounded-full" style="width: 70%"></div>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center">
+                                            <span class="w-20 text-sm text-gray-600">Europe</span>
+                                            <div class="w-full bg-gray-200 rounded-full h-4">
+                                                <div class="bg-green-500 h-4 rounded-full" style="width: 55%"></div>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center">
+                                            <span class="w-20 text-sm text-gray-600">APAC</span>
+                                            <div class="w-full bg-gray-200 rounded-full h-4">
+                                                <div class="bg-yellow-500 h-4 rounded-full" style="width: 40%"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- 分享按钮 -->
+                        <div class="absolute bottom-10 right-6">
+                            <button class="w-16 h-16 bg-blue-600 text-white rounded-full flex items-center justify-center shadow-2xl hover:bg-blue-700 transition-transform hover:scale-105">
+                                <i data-lucide="share-2" class="w-8 h-8"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 3. 历史记录页 -->
+            <div id="history" class="tab-pane">
+                 <div class="flex flex-col items-center">
+                    <p class="text-gray-600 mb-4">设备尺寸: 400x890px</p>
+                    <div class="w-[400px] h-[890px] bg-gray-50 rounded-[40px] shadow-2xl border-8 border-gray-800 overflow-hidden">
+                        <div class="flex flex-col h-full">
+                            <!-- 状态栏 -->
+                            <div class="flex justify-between items-center px-6 pt-4 bg-white">
+                                <span class="text-sm font-semibold">9:43</span>
+                                <div class="flex items-center space-x-1">
+                                    <i data-lucide="signal" class="w-4 h-4"></i>
+                                    <i data-lucide="wifi" class="w-4 h-4"></i>
+                                    <i data-lucide="battery-full" class="w-5 h-5"></i>
+                                </div>
+                            </div>
+                            <!-- App 导航栏 -->
+                            <div class="flex justify-between items-center p-4 border-b bg-white">
+                                <i data-lucide="arrow-left" class="w-6 h-6 text-gray-700"></i>
+                                <h2 class="text-lg font-semibold text-gray-800">History</h2>
+                                <div class="w-6"></div> <!-- 占位符，保持标题居中 -->
+                            </div>
+                            <!-- 列表内容 -->
+                            <div class="flex-grow overflow-y-auto p-2 space-y-2">
+                                <!-- 列表项 1: 生成中 -->
+                                <div class="bg-white p-4 rounded-lg shadow-sm opacity-60">
+                                    <div class="flex items-center mb-2">
+                                        <img src="https://img.icons8.com/color/48/000000/pdf.png" class="w-6 h-6 mr-3" alt="PDF Icon"/>
+                                        <span class="font-semibold text-gray-400 flex-grow truncate">Annual Financials 2024.pdf</span>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <div>
+                                            <p class="text-xs text-gray-400">July 11, 2025</p>
+                                            <span class="text-xs font-medium bg-yellow-100 text-yellow-800 py-0.5 px-2 rounded-full">Generating...</span>
+                                        </div>
+                                        <div class="flex items-center space-x-2">
+                                            <button class="p-2 text-gray-300 rounded-full cursor-not-allowed"><i data-lucide="trash-2" class="w-5 h-5"></i></button>
+                                            <button class="p-2 text-gray-300 rounded-full cursor-not-allowed"><i data-lucide="share-2" class="w-5 h-5"></i></button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- 列表项 2: 未发布 (Unpublished) -->
+                                <div class="bg-white p-4 rounded-lg shadow-sm">
+                                    <div class="flex items-center mb-2">
+                                        <img src="https://img.icons8.com/color/48/microsoft-word-2019.png" class="w-6 h-6 mr-3" alt="Word Icon"/>
+                                        <span class="font-semibold text-gray-800 flex-grow truncate">Project Proposal_Final.docx</span>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <div>
+                                            <p class="text-xs text-gray-500">July 10, 2025</p>
+                                            <span class="text-xs font-medium bg-gray-100 text-gray-700 py-0.5 px-2 rounded-full">Unpublished</span>
+                                        </div>
+                                        <div class="flex items-center space-x-2">
+                                            <button onclick="alert('触发删除二次确认')" class="p-2 text-gray-500 hover:bg-gray-100 rounded-full"><i data-lucide="trash-2" class="w-5 h-5"></i></button>
+                                            <button class="p-2 text-gray-500 hover:bg-gray-100 rounded-full"><i data-lucide="share-2" class="w-5 h-5"></i></button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- 列表项 3: 已发布 -->
+                                <div class="bg-white p-4 rounded-lg shadow-sm">
+                                    <div class="flex items-center mb-2">
+                                        <img src="https://img.icons8.com/color/48/microsoft-powerpoint-2019.png" class="w-6 h-6 mr-3" alt="PPT Icon"/>
+                                        <span class="font-semibold text-gray-800 flex-grow truncate">Q2 Sales Report.pptx</span>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <div>
+                                            <p class="text-xs text-gray-500">July 10, 2025</p>
+                                            <span class="text-xs font-medium bg-blue-100 text-blue-700 py-0.5 px-2 rounded-full">Published: 28 days left</span>
+                                        </div>
+                                        <div class="flex items-center space-x-2">
+                                            <button onclick="alert('触发删除二次确认')" class="p-2 text-gray-500 hover:bg-gray-100 rounded-full"><i data-lucide="trash-2" class="w-5 h-5"></i></button>
+                                            <button class="p-2 text-gray-500 hover:bg-gray-100 rounded-full"><i data-lucide="share-2" class="w-5 h-5"></i></button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- 列表项 4: 已过期 -->
+                                <div class="bg-white p-4 rounded-lg shadow-sm">
+                                    <div class="flex items-center mb-2">
+                                        <img src="https://img.icons8.com/color/48/microsoft-excel-2019.png" class="w-6 h-6 mr-3" alt="Excel Icon"/>
+                                        <span class="font-semibold text-gray-800 flex-grow truncate">Market Analysis Data.xlsx</span>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <div>
+                                            <p class="text-xs text-gray-500">June 05, 2025</p>
+                                            <span class="text-xs font-medium bg-red-100 text-red-700 py-0.5 px-2 rounded-full">Expired</span>
+                                        </div>
+                                        <div class="flex items-center space-x-2">
+                                            <button onclick="alert('触发删除二次确认')" class="p-2 text-gray-500 hover:bg-gray-100 rounded-full"><i data-lucide="trash-2" class="w-5 h-5"></i></button>
+                                            <button class="p-2 text-gray-500 hover:bg-gray-100 rounded-full"><i data-lucide="share-2" class="w-5 h-5"></i></button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4. 分享查看页 -->
+            <div id="shared" class="tab-pane">
+                <div class="flex flex-col items-center">
+                    <p class="text-gray-600 mb-4">模拟PC浏览器查看效果</p>
+                    <div class="w-full max-w-6xl bg-gray-800 rounded-xl shadow-2xl overflow-hidden">
+                        <!-- 浏览器顶部 -->
+                        <div class="bg-gray-700 p-2 flex items-center space-x-2">
+                            <div class="w-3 h-3 bg-red-500 rounded-full"></div>
+                            <div class="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                            <div class="w-3 h-3 bg-green-500 rounded-full"></div>
+                            <div class="flex-grow bg-gray-800 text-gray-300 text-sm rounded-md px-4 py-1">wps.com/share_as_web/xyz123</div>
+                        </div>
+                        <!-- 页面内容 -->
+                        <div class="bg-gray-50 h-[720px] overflow-y-auto">
+                            <!-- 导量 Banner (已更新) -->
+                            <div class="sticky top-0 z-10 bg-blue-600 text-white p-3 flex items-center justify-between shadow-md">
+                                <div class="flex items-center">
+                                    <img src="https://upload.wikimedia.org/wikipedia/en/thumb/8/84/WPS-logo.svg/2560px-WPS-logo.svg.png" class="h-7 mr-4" alt="WPS Logo">
+                                    <span class="font-semibold text-sm md:text-base">Created with WPS Office. Open in App for a better experience.</span>
+                                </div>
+                                <button class="bg-white text-blue-600 font-bold py-2 px-4 rounded-md text-sm hover:bg-blue-100 transition-colors">Make the Same</button>
+                            </div>
+                            
+                            <!-- 主报告内容 -->
+                            <div class="max-w-4xl mx-auto p-6 md:p-10">
+                                <div class="flex justify-between items-start mb-6">
+                                    <h1 class="text-4xl font-bold text-gray-800">WPS OPPO商店新增用户数据报告</h1>
+                                    <!-- 新增按钮 -->
+                                    <button class="flex items-center text-sm text-gray-600 bg-white border border-gray-300 rounded-md py-2 px-3 hover:bg-gray-100 transition-colors">
+                                        <i data-lucide="file-text" class="w-4 h-4 mr-2"></i>
+                                        Check original document
+                                    </button>
+                                </div>
+
+                                <div class="mb-10 p-6 bg-blue-50 rounded-lg border border-blue-200">
+                                    <h2 class="text-2xl font-semibold mb-4 text-blue-800">数据概览</h2>
+                                    <p class="text-gray-700 leading-relaxed">本报告分析了WPS Office海外版在OPPO商店从2025年2月1日至2025年7月1日的新增用户数据。通过可视化图表，我们将展示新增用户数量随时间的变化趋势，并提供关键洞察和结论。</p>
+                                </div>
+                                
+                                <!-- 静态图表示例 -->
+                                <div class="bg-white p-6 rounded-lg shadow-md mb-10">
+                                    <h3 class="text-xl font-semibold text-gray-700 text-center mb-6">WPS OPPO商店每日新增用户数</h3>
+                                    <img src="https://i.imgur.com/8Yv2aG4.png" alt="数据图表的静态示意图" class="w-full h-auto rounded-md"/>
+                                </div>
+
+                                <div class="p-6 bg-green-50 rounded-lg border border-green-200">
+                                    <h2 class="text-2xl font-semibold mb-4 text-green-800">数据分析结论</h2>
+                                    <ul class="list-disc pl-5 text-gray-700 space-y-3">
+                                        <li><strong class="font-semibold">总新增用户数：</strong>在2025年2月1日至2025年7月1日期间，WPS Office海外版在OPPO商店共计新增用户 <span class="font-bold text-green-700">2,345,678</span> 名。</li>
+                                        <li><strong class="font-semibold">显著增长：</strong>在4月初，新增用户数达到峰值 <span class="font-bold text-green-700">42,488</span> 名，这可能与特定营销活动、OPPO商店的推荐或季节性因素有关。</li>
+                                        <li><strong class="font-semibold">近期趋势：</strong>进入5月和6月，新增用户数呈现持续下降趋势，最低点为 <span class="font-bold text-red-600">5,534</span> 名。这可能需要进一步分析原因，例如市场竞争加剧或推广力度减弱。</li>
+                                        <li><strong class="font-semibold">综合来看：</strong>OPPO商店的新增用户增长存在明显的波动性。4月初的爆发式增长表明该渠道具备巨大潜力，但随后的下降趋势提示我们需要持续优化运营策略，以维持和提升用户增长。</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 初始化 Lucide 图标
+        lucide.createIcons();
+
+        // Tab 切换逻辑
+        function changeTab(event, tabID) {
+            const tabButtons = document.querySelectorAll('.tab-button');
+            const tabPanes = document.querySelectorAll('.tab-pane');
+
+            tabButtons.forEach(button => {
+                button.classList.remove('active');
+            });
+            tabPanes.forEach(pane => {
+                pane.classList.remove('active');
+            });
+
+            event.target.classList.add('active');
+            document.getElementById(tabID).classList.add('active');
+        }
+    </script>
+</body>
+</html>
