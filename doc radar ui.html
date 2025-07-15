@@ -64,7 +64,16 @@
                             </svg>
                             <p class="text-sm font-medium text-gray-800 dark:text-gray-200">
                                 想让WPS自动发现所有新文档吗？
-                                <button class="font-semibold text-blue-600 dark:text-blue-400 hover:underline ml-2">立即开启</button>
+                                <!-- Tooltip container -->
+                                <span class="relative inline-block ml-2">
+                                    <button id="enable-btn-infobar" class="font-semibold text-blue-600 dark:text-blue-400 hover:underline">立即开启</button>
+                                    <!-- Tooltip -->
+                                    <div id="enable-tooltip-infobar" class="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-72 p-3 bg-gray-800 text-white text-xs rounded-lg shadow-lg z-10 opacity-0 invisible transition-opacity duration-200 pointer-events-none">
+                                        <div class="absolute top-[-4px] left-1/2 -translate-x-1/2 w-0 h-0 border-x-4 border-x-transparent border-b-4 border-b-gray-800"></div>
+                                        <h4 class="font-bold mb-1">开启全局文档雷达</h4>
+                                        <p class="text-gray-300">开启后，WPS将能发现您电脑上任何位置的新文档。此功能需要管理员权限，WPS承诺保护您的数据安全与隐私。</p>
+                                    </div>
+                                </span>
                             </p>
                         </div>
                         <button onclick="document.getElementById('info-bar').style.display='none'" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-white">
@@ -208,9 +217,24 @@
             }, 1500); // 1.5 second scan simulation
         }
 
-        // Initialize with the first tab shown
+        // Initialize with the first tab shown and setup tooltip listeners
         document.addEventListener('DOMContentLoaded', () => {
             showTab('infobar');
+
+            const enableBtn = document.getElementById('enable-btn-infobar');
+            const enableTooltip = document.getElementById('enable-tooltip-infobar');
+
+            if (enableBtn && enableTooltip) {
+                enableBtn.addEventListener('mouseenter', () => {
+                    enableTooltip.classList.remove('opacity-0', 'invisible');
+                    enableTooltip.classList.add('opacity-100', 'visible');
+                });
+
+                enableBtn.addEventListener('mouseleave', () => {
+                    enableTooltip.classList.remove('opacity-100', 'visible');
+                    enableTooltip.classList.add('opacity-0', 'invisible');
+                });
+            }
         });
     </script>
 
