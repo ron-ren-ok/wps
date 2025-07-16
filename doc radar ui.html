@@ -34,14 +34,17 @@
         <!-- Tab Navigation -->
         <div class="border-b border-gray-200 dark:border-gray-700">
             <nav class="flex -mb-px" aria-label="Tabs">
-                <button id="tab-native" class="tab-btn tab-active text-sm sm:text-base w-1/3 py-4 px-1 text-center border-b-2 font-medium" onclick="showTab('native')">
+                <button id="tab-native" class="tab-btn tab-active text-sm sm:text-base w-1/4 py-4 px-1 text-center border-b-2 font-medium" onclick="showTab('native')">
                     原生风格 (方案B)
                 </button>
-                <button id="tab-security" class="tab-btn tab-inactive text-sm sm:text-base w-1/3 py-4 px-1 text-center border-b-2 font-medium" onclick="showTab('security')">
+                <button id="tab-security" class="tab-btn tab-inactive text-sm sm:text-base w-1/4 py-4 px-1 text-center border-b-2 font-medium" onclick="showTab('security')">
                     安全心智 (方案C)
                 </button>
-                <button id="tab-enhanced-security" class="tab-btn tab-inactive text-sm sm:text-base w-1/3 py-4 px-1 text-center border-b-2 font-medium" onclick="showTab('enhanced-security')">
+                <button id="tab-enhanced-security" class="tab-btn tab-inactive text-sm sm:text-base w-1/4 py-4 px-1 text-center border-b-2 font-medium" onclick="showTab('enhanced-security')">
                     安全心智-过程动画
+                </button>
+                 <button id="tab-settings" class="tab-btn tab-inactive text-sm sm:text-base w-1/4 py-4 px-1 text-center border-b-2 font-medium" onclick="showTab('settings')">
+                    设置中心入口
                 </button>
             </nav>
         </div>
@@ -79,7 +82,7 @@
                 </div>
             </div>
 
-            <!-- 3. Security Mindset Popup (方案C) -->
+            <!-- 2. Security Mindset Popup (方案C) -->
             <div id="content-security" class="tab-content hidden">
                 <div class="w-full h-[720px] bg-gray-800 flex items-end justify-end p-4 rounded-lg bg-cover" style="background-image: url('https://placehold.co/1920x1080/2d3748/2d3748?text=');">
                     <div class="w-96 bg-gray-200/80 dark:bg-gray-900/80 backdrop-blur-xl rounded-lg shadow-2xl border border-gray-300/50 dark:border-gray-700/50 overflow-hidden">
@@ -169,13 +172,54 @@
                     </div>
                 </div>
             </div>
+            
+            <!-- 5. Settings Center UI -->
+            <div id="content-settings" class="tab-content hidden">
+                 <div class="w-full h-[720px] bg-gray-50 dark:bg-gray-800/50 flex items-center justify-center p-4 rounded-lg">
+                    <div class="w-full max-w-2xl p-8 bg-white dark:bg-gray-800 rounded-lg shadow-md">
+                        <div class="relative mb-6">
+                           <button class="absolute -left-2 -top-2 p-2 text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white rounded-full hover:bg-gray-100 dark:hover:bg-gray-700">
+                               <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                  <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+                               </svg>
+                           </button>
+                           <h3 class="text-lg font-semibold text-gray-900 dark:text-white text-center">接收的文件 (新文件提示)</h3>
+                        </div>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 mb-6 text-center">选择WPS Office如何检测您电脑上的新文档。</p>
+                        <div class="space-y-4">
+                            <label for="radio-common" class="flex items-center p-4 border rounded-lg cursor-pointer has-[:checked]:bg-blue-50 has-[:checked]:border-blue-500 dark:border-gray-700 dark:has-[:checked]:bg-blue-900/20 dark:has-[:checked]:border-blue-700">
+                                <input type="radio" id="radio-common" name="monitoring-option" value="common" class="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500" checked>
+                                <span class="ml-3 text-sm">
+                                    <span class="font-medium text-gray-900 dark:text-white">仅监控常见目录</span>
+                                </span>
+                            </label>
+                            
+                            <label for="radio-global" class="flex items-center p-4 border rounded-lg cursor-pointer has-[:checked]:bg-blue-50 has-[:checked]:border-blue-500 dark:border-gray-700 dark:has-[:checked]:bg-blue-900/20 dark:has-[:checked]:border-blue-700">
+                                <input type="radio" id="radio-global" name="monitoring-option" value="global" class="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500">
+                                <span class="ml-3 text-sm flex-grow">
+                                    <span class="font-medium text-gray-900 dark:text-white">全局监控</span>
+                                    <span class="text-gray-500 dark:text-gray-400 ml-2">(需要管理员权限)</span>
+                                </span>
+                                <span class="text-xs font-semibold bg-green-100 text-green-800 px-2 py-0.5 rounded-full dark:bg-green-900 dark:text-green-200">推荐</span>
+                            </label>
+
+                            <label for="radio-off" class="flex items-center p-4 border rounded-lg cursor-pointer has-[:checked]:bg-blue-50 has-[:checked]:border-blue-500 dark:border-gray-700 dark:has-[:checked]:bg-blue-900/20 dark:has-[:checked]:border-blue-700">
+                                <input type="radio" id="radio-off" name="monitoring-option" value="off" class="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500">
+                                <span class="ml-3 text-sm">
+                                    <span class="font-medium text-gray-900 dark:text-white">关闭</span>
+                                </span>
+                            </label>
+                        </div>
+                    </div>
+                 </div>
+            </div>
 
         </div>
     </div>
 
     <script>
         // JavaScript for tab functionality
-        const tabs = ['native', 'security', 'enhanced-security'];
+        const tabs = ['native', 'security', 'enhanced-security', 'settings'];
         let scanAnimationTimeout;
 
         function showTab(tabId) {
