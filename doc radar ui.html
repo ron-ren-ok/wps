@@ -30,21 +30,34 @@
 </head>
 <body class="bg-gray-100 dark:bg-gray-900 p-4 sm:p-8 flex flex-col items-center justify-center min-h-screen">
 
-    <div class="w-full max-w-7xl bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden">
+    <div class="w-full max-w-5xl bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden relative">
+        <!-- Close Button -->
+        <button title="关闭" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 dark:hover:text-white z-20 p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700">
+            <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+        </button>
+
         <!-- Tab Navigation -->
         <div class="border-b border-gray-200 dark:border-gray-700">
-            <nav class="flex -mb-px" aria-label="Tabs">
-                <button id="tab-native" class="tab-btn tab-active text-sm sm:text-base w-1/4 py-4 px-1 text-center border-b-2 font-medium" onclick="showTab('native')">
+            <nav class="flex -mb-px text-xs sm:text-sm" aria-label="Tabs">
+                <button id="tab-native" class="tab-btn tab-active w-1/6 py-4 px-1 text-center border-b-2 font-medium" onclick="showTab('native')">
                     原生风格 (方案B)
                 </button>
-                <button id="tab-security" class="tab-btn tab-inactive text-sm sm:text-base w-1/4 py-4 px-1 text-center border-b-2 font-medium" onclick="showTab('security')">
+                <button id="tab-security" class="tab-btn tab-inactive w-1/6 py-4 px-1 text-center border-b-2 font-medium" onclick="showTab('security')">
                     安全心智 (方案C)
                 </button>
-                <button id="tab-enhanced-security" class="tab-btn tab-inactive text-sm sm:text-base w-1/4 py-4 px-1 text-center border-b-2 font-medium" onclick="showTab('enhanced-security')">
+                <button id="tab-enhanced-security" class="tab-btn tab-inactive w-1/6 py-4 px-1 text-center border-b-2 font-medium" onclick="showTab('enhanced-security')">
                     安全心智-过程动画
                 </button>
-                 <button id="tab-settings" class="tab-btn tab-inactive text-sm sm:text-base w-1/4 py-4 px-1 text-center border-b-2 font-medium" onclick="showTab('settings')">
+                 <button id="tab-settings" class="tab-btn tab-inactive w-1/6 py-4 px-1 text-center border-b-2 font-medium" onclick="showTab('settings')">
                     设置中心入口
+                </button>
+                <button id="tab-confirm-dialog" class="tab-btn tab-inactive w-1/6 py-4 px-1 text-center border-b-2 font-medium" onclick="showTab('confirm-dialog')">
+                    二次确认对话框
+                </button>
+                 <button id="tab-confirm-dialog-en" class="tab-btn tab-inactive w-1/6 py-4 px-1 text-center border-b-2 font-medium" onclick="showTab('confirm-dialog-en')">
+                    二次确认(英文版)
                 </button>
             </nav>
         </div>
@@ -177,15 +190,15 @@
             <div id="content-settings" class="tab-content hidden">
                  <div class="w-full h-[720px] bg-gray-50 dark:bg-gray-800/50 flex items-center justify-center p-4 rounded-lg">
                     <div class="w-full max-w-2xl p-8 bg-white dark:bg-gray-800 rounded-lg shadow-md">
-                        <div class="relative mb-6">
-                           <button class="absolute -left-2 -top-2 p-2 text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white rounded-full hover:bg-gray-100 dark:hover:bg-gray-700">
-                               <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                                  <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+                        <div class="relative mb-6 border-b pb-4 dark:border-gray-700">
+                           <button class="absolute left-0 top-1/2 -translate-y-1/2 p-2 text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white rounded-full hover:bg-gray-100 dark:hover:bg-gray-700">
+                               <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+                                  <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
                                </svg>
                            </button>
-                           <h3 class="text-lg font-semibold text-gray-900 dark:text-white text-center">接收的文件 (新文件提示)</h3>
+                           <h3 class="text-base font-semibold text-gray-900 dark:text-white text-center">接收的文件 (新文件提示)</h3>
                         </div>
-                        <p class="text-sm text-gray-500 dark:text-gray-400 mb-6 text-center">选择WPS Office如何检测您电脑上的新文档。</p>
+                        
                         <div class="space-y-4">
                             <label for="radio-common" class="flex items-center p-4 border rounded-lg cursor-pointer has-[:checked]:bg-blue-50 has-[:checked]:border-blue-500 dark:border-gray-700 dark:has-[:checked]:bg-blue-900/20 dark:has-[:checked]:border-blue-700">
                                 <input type="radio" id="radio-common" name="monitoring-option" value="common" class="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500" checked>
@@ -214,12 +227,60 @@
                  </div>
             </div>
 
+            <!-- 6. Confirmation Dialog -->
+            <div id="content-confirm-dialog" class="tab-content hidden">
+                 <div class="w-full h-[720px] bg-gray-200 flex items-center justify-center p-4 rounded-lg relative overflow-hidden">
+                    <!-- Background Image -->
+                    <img src="https://storage.googleapis.com/gemini-prod-us-west1-423905-0329/vpa/uploaded/image_232162.png" alt="WPS主界面背景" class="absolute inset-0 w-full h-full object-cover object-top filter blur-sm">
+                    <!-- Overlay -->
+                    <div class="absolute inset-0 bg-black/30"></div>
+                    <!-- Modal -->
+                    <div class="relative w-full max-w-md p-6 bg-white dark:bg-gray-800 rounded-lg shadow-xl text-center">
+                        <button title="关闭" class="absolute top-3 right-3 text-gray-400 hover:text-gray-600 dark:hover:text-white z-20 p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700">
+                           <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">开启全局文档雷达</h3>
+                        <p class="text-sm text-gray-600 dark:text-gray-300 mb-6">为实现全盘监控，下一步WPS需要请求管理员权限。此权限仅用于文件监控服务，WPS承诺保护您的数据安全与隐私。</p>
+                        <div class="flex justify-center space-x-4">
+                            <button class="text-sm bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-800 dark:text-white font-medium py-2 px-8 rounded-md">取消</button>
+                            <button class="text-sm bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-8 rounded-md">开启</button>
+                        </div>
+                    </div>
+                 </div>
+            </div>
+
+            <!-- 7. English Confirmation Dialog -->
+            <div id="content-confirm-dialog-en" class="tab-content hidden">
+                 <div class="w-full h-[720px] bg-gray-200 flex items-center justify-center p-4 rounded-lg relative overflow-hidden">
+                    <!-- Background Image -->
+                    <img src="https://storage.googleapis.com/gemini-prod-us-west1-423905-0329/vpa/uploaded/image_232162.png" alt="WPS主界面背景" class="absolute inset-0 w-full h-full object-cover object-top filter blur-sm">
+                    <!-- Overlay -->
+                    <div class="absolute inset-0 bg-black/30"></div>
+                    <!-- Modal -->
+                    <div class="relative w-full max-w-md p-6 bg-white dark:bg-gray-800 rounded-lg shadow-xl text-center">
+                        <button title="Close" class="absolute top-3 right-3 text-gray-400 hover:text-gray-600 dark:hover:text-white z-20 p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700">
+                           <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Enable Global Document Radar</h3>
+                        <p class="text-sm text-gray-600 dark:text-gray-300 mb-6">To enable full-disk monitoring, WPS will request administrator permissions. This is used only for the file monitoring service. WPS is committed to protecting your data security and privacy.</p>
+                        <div class="flex justify-center space-x-4">
+                            <button class="text-sm bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-800 dark:text-white font-medium py-2 px-8 rounded-md">Cancel</button>
+                            <button class="text-sm bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-8 rounded-md">Enable</button>
+                        </div>
+                    </div>
+                 </div>
+            </div>
+
         </div>
     </div>
 
     <script>
         // JavaScript for tab functionality
-        const tabs = ['native', 'security', 'enhanced-security', 'settings'];
+        const tabs = ['native', 'security', 'enhanced-security', 'settings', 'confirm-dialog', 'confirm-dialog-en'];
         let scanAnimationTimeout;
 
         function showTab(tabId) {
