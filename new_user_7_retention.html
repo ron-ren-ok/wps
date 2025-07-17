@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UI设计稿：WPS新用户7日探索任务</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .tab-button.active {
+            border-color: #4F46E5;
+            color: #4F46E5;
+            font-weight: 600;
+        }
+        /* Animation for the gift box */
+        @keyframes pulse-glow {
+            0%, 100% {
+                transform: scale(1);
+                filter: drop-shadow(0 0 10px rgba(255, 255, 150, 0.4));
+            }
+            50% {
+                transform: scale(1.05);
+                filter: drop-shadow(0 0 20px rgba(255, 255, 150, 0.7));
+            }
+        }
+        .animate-pulse-glow {
+            animation: pulse-glow 3s infinite ease-in-out;
+        }
+        /* Journey Panel Animations */
+        @keyframes unlock-station {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        @keyframes reward-pop-and-fly {
+            0% {
+                opacity: 0;
+                transform: translateY(20px) scale(0.5);
+            }
+            30% {
+                opacity: 1;
+                transform: translateY(0) scale(1.1);
+            }
+            50% {
+                transform: scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: translate(350px, -200px) scale(0.3);
+            }
+        }
+        .animate-unlock { animation: unlock-station 0.5s ease-out forwards; }
+        .reward-fly-effect {
+            position: absolute;
+            top: -40px;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+        }
+        .play-reward-animation {
+            animation: reward-pop-and-fly 1.5s ease-in-out forwards;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex flex-col items-center justify-center min-h-screen p-4">
+
+    <div class="w-full max-w-7xl">
+        <div class="mb-4 border-b border-gray-200">
+            <nav class="flex -mb-px space-x-6" aria-label="Tabs">
+                <button onclick="changeTab(event, 'preview')" class="tab-button whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300">
+                    1. 任务预告弹窗
+                </button>
+                <button onclick="changeTab(event, 'panel')" class="tab-button whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300">
+                    2. 7日探索任务面板
+                </button>
+                <button onclick="changeTab(event, 'reminder')" class="tab-button whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300">
+                    3. 主动提醒弹窗
+                </button>
+                <button onclick="changeTab(event, 'confirmation')" class="tab-button active whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
+                    4. 即时确认弹窗
+                </button>
+            </nav>
+        </div>
+
+        <!-- Simulated PC Screen -->
+        <div id="pc-screen" class="w-full h-[720px] bg-gray-300 rounded-lg shadow-lg overflow-hidden relative border-4 border-gray-700">
+            <!-- Simulated WPS App Window -->
+            <div class="w-full h-full bg-white flex flex-col">
+                <!-- App Header -->
+                <div class="bg-gray-200 p-2 flex justify-between items-center">
+                    <div class="flex items-center space-x-2">
+                        <img src="https://play-lh.googleusercontent.com/7uk1-zZ0dJwW-rftl6vqduw26ldbxYTCxFhPwown2W4kGkIl32b4H14LltStdKDterCO=s96-rw" alt="WPS Logo" class="w-6 h-6">
+                        <span class="text-sm font-semibold text-gray-700">WPS Office - Document1.docx</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <div class="w-3 h-3 bg-yellow-400 rounded-full"></div>
+                        <div class="w-3 h-3 bg-green-400 rounded-full"></div>
+                        <div class="w-3 h-3 bg-red-500 rounded-full"></div>
+                    </div>
+                </div>
+                <!-- App Content Area -->
+                <div class="flex-grow bg-gray-50 p-8 text-center text-gray-400">
+                    模拟的应用主内容区域
+                </div>
+            </div>
+
+            <!-- Tab Content -->
+            <div id="preview" class="tab-content hidden absolute inset-0 flex items-center justify-center bg-black bg-opacity-60">
+                <!-- 1. 任务预告弹窗 (Day 1 Exit) - "Unboxing" Theme -->
+                <div class="bg-gradient-to-br from-gray-800 via-slate-900 to-black rounded-2xl shadow-2xl w-full max-w-md p-8 text-center transform transition-all relative overflow-hidden">
+                    <!-- Background Glow -->
+                    <div class="absolute -top-1/2 -left-1/2 w-[200%] h-[200%] bg-radial-gradient from-indigo-500/20 to-transparent opacity-50 animate-spin" style="animation-duration: 10s;"></div>
+
+                    <!-- Gift Box SVG with Animation -->
+                    <div class="relative mb-4">
+                         <svg class="w-32 h-32 mx-auto animate-pulse-glow" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="a" x1="64" x2="64" y1="33.5" y2="128" gradientUnits="userSpaceOnUse"><stop stop-color="#4F46E5" offset="0"/><stop stop-color="#7C3AED" offset="1"/></linearGradient><linearGradient id="b" x1="64" x2="64" y1="0" y2="33.5" gradientUnits="userSpaceOnUse"><stop stop-color="#A78BFA" offset="0"/><stop stop-color="#818CF8" offset="1"/></linearGradient></defs><path fill="url(#a)" d="M112 33.5H16c-2.21 0-4 1.79-4 4v86.5c0 2.21 1.79 4 4 4h96c2.21 0 4-1.79 4-4V37.5c0-2.21-1.79-4-4-4Z"/><path fill="#3730A3" d="M69.5 33.5h-11V128h11V33.5Z"/><path fill="url(#b)" d="M101.5 33.5H26.5L12 18.25V4c0-2.21 1.79-4 4-4h96c2.21 0 4 1.79 4 4v14.25L101.5 33.5Z"/><path fill="#A78BFA" d="M84.5 33.5c0-11.04-10.08-20-22.5-20s-22.5 8.96-22.5 20h45Z"/><path d="M62 13.5c-11.04 0-20 8.96-20 20h20V13.5Z" opacity=".2"/></svg>
+                    </div>
+                    
+                    <h3 class="text-2xl font-bold text-white tracking-tight">一份来自WPS的神秘礼物</h3>
+                    <p class="mt-2 text-sm text-indigo-200">已为你开启为期7天的探索之旅</p>
+                    
+                    <div class="mt-6 bg-slate-700/50 border border-slate-600 rounded-lg p-4 backdrop-blur-sm">
+                        <p class="text-sm font-medium text-gray-300">明日开启WPS，即可领取：</p>
+                        <p class="text-xl font-bold text-yellow-300 mt-1 tracking-wider">3天 WPS Pro 会员</p>
+                    </div>
+
+                    <div class="mt-4 text-xs text-slate-400">
+                        <p>未来6天仅需打开WPS，即可获得超长WPS PRO和WPS AI会员</p>
+                    </div>
+
+                    <div class="mt-8">
+                        <button class="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-3 px-4 rounded-lg transition-all transform hover:scale-105 shadow-lg shadow-indigo-500/30">
+                            满怀期待
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="panel" class="tab-content hidden absolute inset-0 flex items-center justify-center bg-black bg-opacity-60">
+                <!-- 2. 7日探索任务面板 - Horizontal Journey Theme -->
+                <div class="bg-white rounded-2xl shadow-2xl w-full max-w-6xl p-8 transform transition-all relative">
+                    <div class="flex justify-between items-center mb-8">
+                        <h3 class="text-2xl font-bold text-gray-800 tracking-tight">7日探索之旅</h3>
+                        <button class="text-gray-400 hover:text-gray-600 text-2xl" onclick="resetPanelAnimation()">&times;</button>
+                    </div>
+
+                    <div class="w-full flex justify-between items-start relative">
+                        <!-- Path -->
+                        <div class="absolute top-10 left-0 w-full h-1 bg-gray-200"></div>
+                        <div id="progress-path-panel" class="absolute top-10 left-0 h-1 bg-gradient-to-r from-cyan-400 to-indigo-500 transition-all duration-500" style="width: 21%;"></div>
+
+                        <!-- Day Stations -->
+                        <div class="day-station text-center relative z-10" data-day="1">
+                            <div class="w-20 h-20 mx-auto bg-green-100 border-2 border-green-300 rounded-full flex items-center justify-center">
+                                <svg class="w-10 h-10 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                            </div>
+                            <p class="mt-3 text-sm font-semibold text-gray-800">第 1 天</p>
+                            <p class="text-xs text-gray-500">旅程开启</p>
+                        </div>
+                        
+                        <div class="day-station text-center relative z-10" data-day="2">
+                            <div class="w-20 h-20 mx-auto bg-green-100 border-2 border-green-300 rounded-full flex items-center justify-center">
+                                <svg class="w-10 h-10 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                            </div>
+                            <p class="mt-3 text-sm font-semibold text-gray-800">第 2 天</p>
+                            <p class="text-xs text-gray-500">3天 Pro 会员</p>
+                        </div>
+
+                        <div class="day-station text-center relative z-10 current-day" data-day="3">
+                            <div class="reward-fly-effect">
+                                <svg class="w-12 h-12 text-purple-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" /></svg>
+                            </div>
+                            <div class="station-icon w-20 h-20 mx-auto bg-white border-2 border-indigo-500 rounded-full flex items-center justify-center animate-pulse">
+                                <svg class="w-10 h-10 text-indigo-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z" /></svg>
+                            </div>
+                            <p class="mt-3 text-sm font-semibold text-indigo-600">第 3 天</p>
+                            <p class="text-xs text-gray-500">1周 PDF 特权</p>
+                        </div>
+                        
+                        <div class="day-station text-center relative z-10" data-day="4">
+                             <div class="reward-fly-effect">
+                                <svg class="w-12 h-12 text-cyan-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" /></svg>
+                            </div>
+                             <div class="station-icon w-20 h-20 mx-auto bg-gray-100 border-2 border-gray-300 rounded-full flex items-center justify-center">
+                                <svg class="w-8 h-8 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" /></svg>
+                            </div>
+                            <p class="mt-3 text-sm font-semibold text-gray-400">第 4 天</p>
+                            <p class="text-xs text-gray-400">1周 看图会员</p>
+                        </div>
+
+                        <div class="day-station text-center relative z-10" data-day="5">
+                             <div class="reward-fly-effect">
+                                <svg class="w-12 h-12 text-amber-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.898 20.553L16.5 21.75l-.398-1.197a3.375 3.375 0 00-2.37-2.37L12.75 18l1.197-.398a3.375 3.375 0 002.37-2.37L16.5 14.25l.398 1.197a3.375 3.375 0 002.37 2.37L20.25 18l-1.197.398a3.375 3.375 0 00-2.37 2.37z" /></svg>
+                            </div>
+                             <div class="station-icon w-20 h-20 mx-auto bg-gray-100 border-2 border-gray-300 rounded-full flex items-center justify-center">
+                                <svg class="w-8 h-8 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" /></svg>
+                            </div>
+                            <p class="mt-3 text-sm font-semibold text-gray-400">第 5 天</p>
+                            <p class="text-xs text-gray-400">1周 Pro 会员</p>
+                        </div>
+                        <div class="day-station text-center relative z-10" data-day="6">
+                             <div class="reward-fly-effect">
+                                <svg class="w-12 h-12 text-sky-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 006 3.75v16.5a2.25 2.25 0 002.25 2.25h7.5A2.25 2.25 0 0018 20.25V3.75a2.25 2.25 0 00-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3" /></svg>
+                            </div>
+                             <div class="station-icon w-20 h-20 mx-auto bg-gray-100 border-2 border-gray-300 rounded-full flex items-center justify-center">
+                                <svg class="w-8 h-8 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" /></svg>
+                            </div>
+                            <p class="mt-3 text-sm font-semibold text-gray-400">第 6 天</p>
+                            <p class="text-xs text-gray-400">1周 AI 移动版</p>
+                        </div>
+                        <div class="day-station text-center relative z-10" data-day="7">
+                             <div class="reward-fly-effect">
+                                 <svg class="w-12 h-12 text-rose-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17.25v1.007a3 3 0 01-.879 2.122L7.5 21h9l-1.621-.621A3 3 0 0115 18.257V17.25m6-12V15a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 15V5.25A2.25 2.25 0 015.25 3h4.5M12 12h.008v.008H12V12zm-3.75 0h.008v.008H8.25V12zm7.5 0h.008v.008h-.008V12z" /></svg>
+                            </div>
+                             <div class="station-icon w-20 h-20 mx-auto bg-gray-100 border-2 border-gray-300 rounded-full flex items-center justify-center">
+                                <svg class="w-8 h-8 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" /></svg>
+                            </div>
+                            <p class="mt-3 text-sm font-semibold text-gray-400">第 7 天</p>
+                            <p class="text-xs text-gray-400">1周 AI PC版</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="reminder" class="tab-content hidden absolute bottom-5 right-5">
+                <!-- 3. 主动提醒弹窗 (Windows Light Style) -->
+                <div class="bg-white rounded-lg shadow-2xl w-96 border border-gray-200">
+                    <div class="p-3 flex justify-between items-center">
+                        <div class="flex items-center space-x-2">
+                            <img class="h-5 w-5" src="https://play-lh.googleusercontent.com/7uk1-zZ0dJwW-rftl6vqduw26ldbxYTCxFhPwown2W4kGkIl32b4H14LltStdKDterCO=s96-rw" alt="WPS Logo">
+                            <p class="text-sm font-semibold text-gray-800">签到提醒</p>
+                        </div>
+                        <button class="text-gray-500 hover:text-gray-800 text-lg">&times;</button>
+                    </div>
+                    <div class="px-3 pb-4">
+                        <p class="text-base text-gray-700">今日签到可领取【1周PDF特权】，快来签到吧！</p>
+                        <div class="mt-4 flex space-x-2">
+                            <button class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-800 text-sm font-medium py-1.5 px-4 rounded-md transition-colors border border-gray-300">关闭</button>
+                            <button class="flex-1 bg-blue-500 hover:bg-blue-600 text-white text-sm font-medium py-1.5 px-4 rounded-md transition-colors">去签到</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="confirmation" class="tab-content hidden absolute bottom-5 right-5">
+                <!-- 4. 即时确认弹窗 -->
+                <div class="bg-white rounded-lg shadow-2xl w-96 border border-gray-200">
+                     <div class="p-3">
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0">
+                                <svg class="h-6 w-6 text-green-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </div>
+                            <div class="ml-3 w-0 flex-1">
+                                <p class="text-sm font-medium text-gray-900">签到成功！</p>
+                                <p class="mt-1 text-sm text-gray-500">恭喜获得【1周PDF特权】。明日签到可领【1周WPS看图会员】。</p>
+                                <div class="mt-2">
+                                    <button class="text-xs text-blue-500 hover:underline font-medium">查看详情 &gt;</button>
+                                </div>
+                            </div>
+                            <div class="ml-4 flex-shrink-0 flex">
+                                <button type="button" class="inline-flex rounded-md bg-white text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                                    <span class="sr-only">Close</span>
+                                    <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                        <path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let animationPlayed = false;
+
+        function changeTab(event, tabID) {
+            let i;
+            const tabcontent = document.getElementsByClassName("tab-content");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].classList.add("hidden");
+            }
+            const tablinks = document.getElementsByClassName("tab-button");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].classList.remove("active");
+            }
+            const activeTab = document.getElementById(tabID);
+            if (activeTab) {
+                activeTab.classList.remove("hidden");
+            }
+            if(event && event.currentTarget) {
+                event.currentTarget.classList.add("active");
+            }
+            
+            const pcScreen = document.getElementById('pc-screen');
+            if(pcScreen) {
+                if(tabID === 'reminder' || tabID === 'confirmation') {
+                    pcScreen.classList.remove('bg-gray-300');
+                    pcScreen.classList.add('bg-transparent', 'border-none', 'shadow-none');
+                } else {
+                    pcScreen.classList.add('bg-gray-300');
+                    pcScreen.classList.remove('bg-transparent', 'border-none', 'shadow-none');
+                }
+            }
+
+            if (tabID === 'panel' && !animationPlayed) {
+                setTimeout(playCheckInAnimation, 200);
+            }
+        }
+
+        function playCheckInAnimation() {
+            if (animationPlayed) return;
+            animationPlayed = true;
+
+            const currentDay = document.querySelector('.current-day');
+            if (!currentDay) return;
+
+            const stationIcon = currentDay.querySelector('.station-icon');
+            const rewardFlyer = currentDay.querySelector('.reward-fly-effect');
+            const progressPath = document.getElementById('progress-path-panel');
+
+            if (rewardFlyer && stationIcon) {
+                stationIcon.classList.add('animate-unlock');
+                rewardFlyer.classList.add('play-reward-animation');
+            }
+            
+            setTimeout(() => {
+                if (progressPath) {
+                    const day = parseInt(currentDay.dataset.day, 10);
+                    const newWidth = (day / 7) * 100 - 7;
+                    progressPath.style.width = `${newWidth}%`;
+                }
+
+                if(stationIcon){
+                    stationIcon.classList.remove('bg-white', 'border-indigo-500', 'animate-pulse');
+                    stationIcon.classList.add('bg-green-100', 'border-green-300');
+                    stationIcon.innerHTML = `<svg class="w-10 h-10 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>`;
+                }
+                
+                const dayText = currentDay.querySelector('p:first-of-type');
+                if(dayText) {
+                    dayText.classList.remove('text-indigo-600');
+                    dayText.classList.add('text-gray-800');
+                }
+
+                currentDay.classList.remove('current-day');
+                
+                const nextDay = currentDay.nextElementSibling;
+                if (nextDay && nextDay.classList.contains('day-station')) {
+                    nextDay.classList.add('current-day');
+                    const nextStationIcon = nextDay.querySelector('.station-icon');
+                    if(nextStationIcon) {
+                        nextStationIcon.classList.remove('bg-gray-100', 'border-gray-300');
+                        nextStationIcon.classList.add('bg-white', 'border-indigo-500', 'animate-pulse');
+                        const svg = nextStationIcon.querySelector('svg');
+                        if(svg) {
+                            svg.classList.remove('text-gray-400');
+                            svg.classList.add('text-indigo-500');
+                        }
+                    }
+                    const nextDayText = nextDay.querySelector('p:first-of-type');
+                    if(nextDayText) {
+                        nextDayText.classList.remove('text-gray-400');
+                        nextDayText.classList.add('text-indigo-600');
+                    }
+                    const nextDayReward = nextDay.querySelector('p:last-of-type');
+                    if(nextDayReward) {
+                       nextDayReward.classList.remove('text-gray-400');
+                    }
+                }
+            }, 1500);
+        }
+        
+        function resetPanelAnimation() {
+            animationPlayed = false;
+            // This is a simplified reset for demo. A full implementation would reset all styles and classes.
+            alert('动画已重置，请刷新页面或重新进入此标签页以再次观看。');
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const panelTab = document.querySelector('button[onclick*="panel"]');
+            if (panelTab && panelTab.classList.contains('active')) {
+                setTimeout(playCheckInAnimation, 500);
+            }
+        });
+
+    </script>
+
+</body>
+</html>
