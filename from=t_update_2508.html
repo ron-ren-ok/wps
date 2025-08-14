@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WPS下载落地页优化方案Demo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
+            background-color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        .main-content {
+            flex-grow: 1;
+        }
+        .congrats-icon {
+            width: 72px; 
+            height: 72px;
+            background-color: #28a745;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+        }
+        .congrats-icon svg {
+            width: 36px;
+            height: 36px;
+            color: white;
+        }
+        #retry-container {
+            transition: opacity 0.5s ease-in-out;
+        }
+        /* 更新为向右上方呼吸的动画 */
+        @keyframes bounce-top-right {
+          0%, 100% {
+            transform: translate(0, 0);
+          }
+          50% {
+            transform: translate(8px, -8px);
+          }
+        }
+        .animate-bounce-top-right {
+          animation: bounce-top-right 2s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body class="bg-white">
+
+    <!-- Header Section: Added sticky positioning -->
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="container mx-auto px-4 md:px-8">
+            <div class="flex justify-between items-center py-3">
+                <!-- Left: Logo -->
+                <div class="left">
+                    <a href="https://www.wps.com/" class="flex items-center space-x-2">
+                        <img src="https://play-lh.googleusercontent.com/7uk1-zZ0dJwW-rftl6vqduw26ldbxYTCxFhPwown2W4kGkIl32b4H14LltStdKDterCO=s96-rw" alt="WPS Office Logo" class="h-8 w-8">
+                        <span class="font-bold text-xl text-gray-700">WPS Office</span>
+                    </a>
+                </div>
+                <!-- Right: Language Selector -->
+                <div class="right relative">
+                    <button id="lang-button" class="flex items-center space-x-2 text-gray-600 hover:text-blue-600 focus:outline-none">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9V3m0 18a9 9 0 009-9m-9 9a9 9 0 00-9-9" />
+                        </svg>
+                        <span class="text-sm font-medium">Languages</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+                    <!-- Dropdown Menu -->
+                    <div id="lang-dropdown" class="hidden absolute right-0 mt-2 w-40 bg-white rounded-md shadow-lg z-20">
+                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">English</a>
+                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Español</a>
+                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Português</a>
+                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Français</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="container mx-auto p-4 md:px-8 md:py-10">
+            <!-- Main Content Section -->
+            <div class="bg-white text-center flex flex-col items-center">
+                <!-- Congratulations & Steps Section -->
+                <div class="w-full">
+                    <div class="flex justify-center">
+                        <!-- 恢复为静态对号图标 -->
+                        <div class="congrats-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                            </svg>
+                        </div>
+                    </div>
+                    <h1 class="text-3xl md:text-4xl font-bold text-gray-800 mt-5">Congratulations!</h1>
+                    <p class="text-gray-600 mt-2 text-lg">You're one step away from your Free Office Suite.</p>
+
+                    <!-- Steps Bar -->
+                    <div class="w-full max-w-lg mt-8 mx-auto">
+                        <ol class="flex items-center w-full">
+                            <li class="flex w-full items-center text-blue-600 after:content-[''] after:w-full after:h-1 after:border-b after:border-blue-100 after:border-4 after:inline-block">
+                                <span class="flex items-center justify-center w-10 h-10 bg-blue-100 rounded-full lg:h-12 lg:w-12 shrink-0">
+                                    <svg class="w-5 h-5 text-blue-600 lg:w-6 lg:h-6" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+                                </span>
+                            </li>
+                            <li class="flex w-full items-center after:content-[''] after:w-full after:h-1 after:border-b after:border-gray-200 after:border-4 after:inline-block">
+                                <span class="flex items-center justify-center w-10 h-10 bg-blue-100 rounded-full lg:h-12 lg:w-12 shrink-0 ring-4 ring-blue-300">
+                                    <svg class="w-5 h-5 text-blue-600 lg:w-6 lg:h-6" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M10 12a2 2 0 100-4 2 2 0 000 4z"></path><path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.022 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"></path></svg>
+                                </span>
+                            </li>
+                            <li class="flex items-center">
+                                <span class="flex items-center justify-center w-10 h-10 bg-gray-100 rounded-full lg:h-12 lg:w-12 shrink-0">
+                                    <svg class="w-5 h-5 text-gray-500 lg:w-6 lg:h-6" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z"></path></svg>
+                                </span>
+                            </li>
+                        </ol>
+                        <div class="grid grid-cols-3 mt-3 text-sm font-medium text-gray-600">
+                            <div class="text-blue-600">1. Download</div>
+                            <div class="text-center text-blue-600 font-bold">2. Install</div>
+                            <div class="text-right text-gray-400">3. Enjoy!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- New Container for Guide + Arrow -->
+                <div class="relative w-full max-w-5xl mt-10">
+                    <!-- Guiding Arrow Image: Positioned relative to the new container -->
+                    <div class="hidden md:block absolute -top-4 -right-4 w-24 h-24 animate-bounce-top-right z-10">
+                         <img src="https://website-prod.cache.wpscdn.com/img/t2_arrow.117e5f9.png" alt="Arrow pointing to download location">
+                    </div>
+                    <!-- Visual Guide Section (The grey box) -->
+                    <div class="p-6 md:p-8 bg-gray-100/70 rounded-lg">
+                        <h2 class="text-2xl font-semibold text-gray-800 text-center">How to complete installation</h2>
+                        <div class="mt-6 pt-6 border-t border-gray-200 grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
+                            <!-- Left: Text Instructions -->
+                            <div class="text-left md:col-span-2">
+                                <div class="flex flex-col space-y-4">
+                                    <div class="flex items-start">
+                                        <div class="flex-shrink-0 w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center font-bold text-lg">1</div>
+                                        <div class="ml-4"><h3 class="font-semibold text-gray-700">Find Installer</h3><p class="text-sm text-gray-500">Check your browser's download bar or "Downloads" folder.</p></div>
+                                    </div>
+                                    <div class="flex items-start">
+                                        <div class="flex-shrink-0 w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center font-bold text-lg">2</div>
+                                        <div class="ml-4"><h3 class="font-semibold text-gray-700">Click to install</h3><p class="text-sm text-gray-500">Double click on <code class="bg-gray-200 text-red-600 px-1 py-0.5 rounded">wps_wid.exe</code> to start the installation.</p></div>
+                                    </div>
+                                </div>
+                                <!-- Delayed "Try Again" Link -->
+                                <div id="retry-container" class="mt-6 text-sm text-gray-500" style="display: none; opacity: 0;">
+                                    <span>Download didn't start? </span>
+                                    <a href="#" onclick="event.preventDefault(); location.reload();" class="font-semibold text-blue-600 hover:underline">Try again</a>
+                                </div>
+                            </div>
+                            <!-- Right: Video Demo -->
+                            <div class="text-center md:col-span-1">
+                                <h3 class="font-semibold text-gray-700 mb-2">Quick Demo</h3>
+                                <div class="mt-2">
+                                    <video class="rounded-lg shadow-md w-full" autoplay loop muted playsinline>
+                                        <source src="https://cint.sfml.online/assets/videos/download-video-safe-browse.mp4" type="video/mp4">
+                                        Your browser does not support the video tag.
+                                    </video>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Value Proposition Section (Visually toned down) -->
+                <div class="w-full max-w-4xl mt-10 pt-10 border-t border-gray-200 grid grid-cols-1 md:grid-cols-3 gap-8 text-left mx-auto">
+                    <div class="flex items-start space-x-3">
+                        <div class="flex-shrink-0 w-10 h-10 text-gray-500 flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><line x1="10" y1="9" x2="8" y2="9"></line></svg>
+                        </div>
+                        <div><h3 class="font-semibold text-gray-700">Free All in One Office Suite</h3><p class="text-gray-500 text-xs mt-1">Seamless MS Office Compatibility</p></div>
+                    </div>
+                    <div class="flex items-start space-x-3">
+                        <div class="flex-shrink-0 w-10 h-10 text-gray-500 flex items-center justify-center">
+                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg>
+                        </div>
+                        <div><h3 class="font-semibold text-gray-700">Powerful PDF Toolkit</h3><p class="text-gray-500 text-xs mt-1">Convert, compress, edit & more</p></div>
+                    </div>
+                    <div class="flex items-start space-x-3">
+                        <div class="flex-shrink-0 w-10 h-10 text-gray-500 flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-gray-700">Secure and Reliable</h3>
+                            <p class="text-gray-500 text-xs mt-1">
+                                <a href="https://www.wps.com/partnership-customer-stories/" target="_blank" class="underline hover:text-blue-500">Trusted by millions worldwide</a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer Section -->
+    <footer class="mt-auto bg-white">
+        <div class="container mx-auto px-4 md:px-8 py-6 border-t border-gray-200">
+            <!-- Merged Footer Content -->
+            <div class="flex flex-col md:flex-row justify-between md:items-center text-center md:text-left">
+                <!-- Left: Company Info -->
+                <div class="mb-4 md:mb-0">
+                    <div class="flex items-center justify-center md:justify-start">
+                        <img src="https://website-prod.cache.wpscdn.com/img/logo_normal.4e969ab.svg" alt="WPS Logo" class="h-5 mr-4">
+                        <div>
+                            <p class="text-xs text-gray-500">WPS SOFTWARE PTE. LTD. 6 RAFFLES QUAY #14-06 SINGAPORE (048580)</p>
+                            <p class="text-xs text-gray-400 mt-1">Copyright © Kingsoft Office Software. All Rights Reserved.</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Right: Terms and Conditions (Added md:text-right for alignment) -->
+                <div class="text-xs text-gray-400 max-w-md md:text-right">
+                    By using WPS Office, you agree to the WPS Office&nbsp;
+                    <a href="https://www.wps.com/eula" target="_blank" class="underline hover:text-blue-500">License Agreement</a>、
+                    <a href="https://www.wps.com/privacy-policy" target="_blank" class="underline hover:text-blue-500">Privacy Policy</a>、
+                    <a href="https://www.wps.com/legal/AIPrivacyPolicy/" target="_blank" class="underline hover:text-blue-500">AI Privacy Policy</a>&nbsp;and&nbsp;
+                    <a href="https://www.wps.com/legal/AISupplementaryTerms/" target="_blank" class="underline hover:text-blue-500">AI Supplementary Terms</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Logic for the delayed "Try Again" button
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                const retryContainer = document.getElementById('retry-container');
+                if (retryContainer) {
+                    retryContainer.style.display = 'block';
+                    // A small delay to allow the display property to apply before changing opacity for the transition
+                    setTimeout(() => {
+                        retryContainer.style.opacity = '1';
+                    }, 50);
+                }
+            }, 5000); // 5000 milliseconds = 5 seconds
+        });
+
+        // Logic for language dropdown
+        const langButton = document.getElementById('lang-button');
+        const langDropdown = document.getElementById('lang-dropdown');
+
+        langButton.addEventListener('click', () => {
+            langDropdown.classList.toggle('hidden');
+        });
+
+        // Close dropdown if clicking outside
+        window.addEventListener('click', (e) => {
+            if (!langButton.contains(e.target) && !langDropdown.contains(e.target)) {
+                langDropdown.classList.add('hidden');
+            }
+        });
+    </script>
+</body>
+</html>
