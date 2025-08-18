@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>“使用WPS桌面版打开”体验优化Demo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .toast-enter {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        .toast-enter-active {
+            opacity: 1;
+            transform: translateY(0);
+            transition: opacity 300ms, transform 300ms;
+        }
+        .toast-exit {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .toast-exit-active {
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: opacity 300ms, transform 300ms;
+        }
+        .modal-enter {
+            opacity: 0;
+        }
+        .modal-enter-active {
+            opacity: 1;
+            transition: opacity 300ms;
+        }
+        .modal-content-enter {
+            opacity: 0;
+            transform: scale(0.95);
+        }
+        .modal-content-enter-active {
+            opacity: 1;
+            transform: scale(1);
+            transition: opacity 300ms, transform 300ms;
+        }
+        /* FIX: Add explicit exit transition classes for the modal */
+        .modal-exit-active {
+            opacity: 0;
+            transition: opacity 300ms;
+        }
+        .modal-content-exit-active {
+            opacity: 0;
+            transform: scale(0.95);
+            transition: opacity 300ms, transform 300ms;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 flex items-center justify-center min-h-screen p-4">
+
+    <!-- 主容器，模拟PC屏幕 -->
+    <div class="w-[1920px] h-[1080px] max-w-full max-h-[90vh] bg-white rounded-xl shadow-2xl overflow-hidden flex flex-col border border-gray-700">
+        
+        <!-- 模拟窗口顶部栏 -->
+        <div class="bg-gray-800 p-3 flex items-center gap-2 border-b border-gray-700 shadow-md z-10">
+            <div class="w-3.5 h-3.5 bg-red-500 rounded-full"></div>
+            <div class="w-3.5 h-3.5 bg-yellow-400 rounded-full"></div>
+            <div class="w-3.5 h-3.5 bg-green-500 rounded-full"></div>
+            <div class="bg-gray-700 text-white text-sm rounded-md px-4 py-1.5 ml-4 flex-grow text-center">
+                WPS Office Online - Financial_Report_Q3.docx
+            </div>
+            <img src="https://play-lh.googleusercontent.com/7uk1-zZ0dJwW-rftl6vqduw26ldbxYTCxFhPwown2W4kGkIl32b4H14LltStdKDterCO=s96-rw" alt="WPS Logo" class="w-8 h-8 rounded-md">
+        </div>
+
+        <!-- 场景切换Tabs -->
+        <div class="bg-gray-100 border-b border-gray-200">
+            <div class="max-w-7xl mx-auto px-4">
+                <nav class="-mb-px flex space-x-8" aria-label="Tabs">
+                    <button id="tab-not-installed" class="border-indigo-500 text-indigo-600 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
+                        场景一：未安装WPS的用户
+                    </button>
+                    <button id="tab-installed" class="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
+                        场景二：已安装WPS的用户
+                    </button>
+                </nav>
+            </div>
+        </div>
+
+        <!-- 主内容区域 -->
+        <div class="flex-grow bg-gray-50 relative overflow-hidden flex items-center justify-center p-8">
+            <!-- 模拟文档内容 -->
+            <div class="bg-white p-12 rounded-lg shadow-lg w-full max-w-4xl text-center border border-gray-200">
+                <img src="https://play-lh.googleusercontent.com/7uk1-zZ0dJwW-rftl6vqduw26ldbxYTCxFhPwown2W4kGkIl32b4H14LltStdKDterCO=s96-rw" alt="WPS Logo" class="w-16 h-16 mx-auto mb-4 rounded-lg">
+                <h1 class="text-2xl font-bold text-gray-800 mb-2">Financial_Report_Q3.docx</h1>
+                <p class="text-gray-500 mb-8">为了获得最佳的编辑体验，请使用桌面客户端打开。</p>
+                <button id="open-in-desktop-btn" class="bg-indigo-600 text-white font-semibold py-3 px-8 rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-transform transform hover:scale-105">
+                    使用WPS桌面版打开
+                </button>
+            </div>
+
+            <!-- Toast 提示容器 -->
+            <div id="toast-container" class="absolute top-5 left-1/2 -translate-x-1/2 z-50"></div>
+
+            <!-- 下载引导模态框 -->
+            <div id="download-modal" class="hidden fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
+                <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-8 text-center">
+                    <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-indigo-100 mb-5">
+                        <svg class="h-8 w-8 text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-900">正在下载WPS Office</h3>
+                    <p class="mt-3 text-gray-500">为了获得最佳体验，请安装WPS Office客户端。下载器已自动为您启动。</p>
+                    <div class="mt-8">
+                        <button id="close-modal-btn" class="w-full bg-gray-200 text-gray-700 font-semibold py-3 px-6 rounded-lg hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400">
+                            关闭
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- DOM Elements ---
+        const openBtn = document.getElementById('open-in-desktop-btn');
+        const toastContainer = document.getElementById('toast-container');
+        const downloadModal = document.getElementById('download-modal');
+        const modalContent = downloadModal.querySelector('div');
+        const closeModalBtn = document.getElementById('close-modal-btn');
+        const tabNotInstalled = document.getElementById('tab-not-installed');
+        const tabInstalled = document.getElementById('tab-installed');
+
+        // --- State ---
+        let currentState = {
+            isInstalled: false, // 当前模拟的场景
+            isProcessing: false, // 是否正在处理点击事件
+            timerId: null, // 计时器ID
+            successTimerId: null, // 成功Toast的计时器ID
+            isBlurred: false, // 是否模拟了页面失活
+        };
+
+        // --- Functions ---
+
+        /**
+         * 切换模拟场景
+         * @param {boolean} isInstalled - true表示模拟已安装，false表示未安装
+         */
+        function switchScenario(isInstalled) {
+            currentState.isInstalled = isInstalled;
+            if (isInstalled) {
+                tabInstalled.classList.add('border-indigo-500', 'text-indigo-600');
+                tabInstalled.classList.remove('border-transparent', 'text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300');
+                tabNotInstalled.classList.remove('border-indigo-500', 'text-indigo-600');
+                tabNotInstalled.classList.add('border-transparent', 'text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300');
+            } else {
+                tabNotInstalled.classList.add('border-indigo-500', 'text-indigo-600');
+                tabNotInstalled.classList.remove('border-transparent', 'text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300');
+                tabInstalled.classList.remove('border-indigo-500', 'text-indigo-600');
+                tabInstalled.classList.add('border-transparent', 'text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300');
+            }
+            console.log(`场景切换为: ${isInstalled ? '已安装用户' : '未安装用户'}`);
+        }
+
+        /**
+         * 显示Toast提示
+         * @param {string} type - 'loading', 'success'
+         */
+        function showToast(type) {
+            clearTimeout(currentState.successTimerId);
+            
+            const toast = document.createElement('div');
+            toast.className = 'flex items-center bg-white rounded-lg shadow-lg px-6 py-4 border border-gray-200 toast-enter w-auto max-w-lg';
+            
+            let content = '';
+
+            if (type === 'loading') {
+                content = `
+                    <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-indigo-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                    <span class="font-medium text-gray-700">正在为您打开WPS客户端...</span>
+                    <a href="#" id="help-link" class="ml-4 text-sm text-indigo-600 hover:underline flex-shrink-0">遇到问题？</a>
+                `;
+            } else if (type === 'success') {
+                content = `
+                    <svg class="h-6 w-6 text-green-500 mr-4 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                    <div class="flex-grow">
+                        <p class="font-medium text-gray-800">打开成功</p>
+                        <p class="text-sm text-gray-500">请在WPS客户端中查看文件。</p>
+                    </div>
+                    <button id="reinstall-link" class="ml-4 text-sm text-indigo-600 hover:underline flex-shrink-0">重新安装WPS</button>
+                    <button id="close-toast-btn" class="ml-4 text-gray-400 hover:text-gray-600 flex-shrink-0">
+                        <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                    </button>
+                `;
+            }
+
+            toast.innerHTML = content;
+            toastContainer.appendChild(toast);
+
+            requestAnimationFrame(() => {
+                toast.classList.add('toast-enter-active');
+            });
+            
+            if (type === 'loading') {
+                document.getElementById('help-link').addEventListener('click', (e) => {
+                    e.preventDefault();
+                    handleHelpClick();
+                });
+            } else if (type === 'success') {
+                document.getElementById('close-toast-btn').addEventListener('click', () => resetState());
+                document.getElementById('reinstall-link').addEventListener('click', (e) => {
+                    e.preventDefault();
+                    handleReinstallClick();
+                });
+                currentState.successTimerId = setTimeout(() => {
+                    resetState();
+                }, 6000); // 6秒后自动关闭
+            }
+        }
+
+        /**
+         * 隐藏Toast提示
+         * @param {boolean} immediate - 是否立即移除，无动画
+         */
+        function hideToast(immediate = false) {
+            const toast = toastContainer.querySelector('div');
+            if (toast) {
+                if (immediate && toast.parentElement) {
+                    toast.parentElement.removeChild(toast);
+                } else {
+                    toast.classList.remove('toast-enter-active');
+                    toast.classList.add('toast-exit', 'toast-exit-active');
+                    toast.addEventListener('transitionend', () => {
+                        if(toast.parentElement) toast.parentElement.removeChild(toast);
+                    }, { once: true });
+                }
+            }
+        }
+
+        /**
+         * 显示下载模态框
+         */
+        function showDownloadModal() {
+            downloadModal.classList.remove('hidden');
+            requestAnimationFrame(() => {
+                downloadModal.classList.add('modal-enter', 'modal-enter-active');
+                modalContent.classList.add('modal-content-enter', 'modal-content-enter-active');
+            });
+            console.log("模拟: 弹出下载框并自动触发下载器。");
+        }
+
+        /**
+         * 隐藏下载模态框
+         * @param {Function} onHidden - 动画结束后执行的回调
+         */
+        function hideDownloadModal(onHidden) {
+            downloadModal.classList.add('modal-exit-active');
+            modalContent.classList.add('modal-content-exit-active');
+            
+            // FIX: 使用可靠的setTimeout代替不稳定的transitionend事件
+            setTimeout(() => {
+                downloadModal.classList.add('hidden');
+                downloadModal.classList.remove('modal-enter', 'modal-enter-active', 'modal-exit-active');
+                modalContent.classList.remove('modal-content-enter', 'modal-content-enter-active', 'modal-content-exit-active');
+                if (onHidden) {
+                    onHidden();
+                }
+            }, 300); // 必须与CSS动画时长一致
+        }
+        
+        /**
+         * 重置状态
+         */
+        function resetState() {
+            console.log("重置所有状态...");
+            currentState.isProcessing = false;
+            currentState.isBlurred = false;
+            if (currentState.timerId) clearTimeout(currentState.timerId);
+            if (currentState.successTimerId) clearTimeout(currentState.successTimerId);
+            currentState.timerId = null;
+            currentState.successTimerId = null;
+            hideToast();
+            openBtn.disabled = false;
+        }
+
+        /**
+         * "遇到问题？" 链接点击处理
+         */
+        function handleHelpClick() {
+            console.log("用户点击 '遇到问题？'");
+            clearTimeout(currentState.timerId);
+            hideToast(true); // 立即隐藏
+            showDownloadModal();
+            currentState.isProcessing = false;
+            openBtn.disabled = false;
+        }
+
+        /**
+         * "重新安装WPS" 链接点击处理
+         */
+        function handleReinstallClick() {
+            console.log("用户点击 '重新安装WPS'");
+            resetState();
+            showDownloadModal();
+        }
+
+        /**
+         * 主处理函数
+         */
+        function handleOpenClick() {
+            if (currentState.isProcessing) return;
+
+            resetState();
+            currentState.isProcessing = true;
+            openBtn.disabled = true;
+
+            showToast('loading');
+            console.log("尝试通过Deeplink唤起客户端...");
+
+            if (currentState.isInstalled) {
+                setTimeout(() => {
+                    if (currentState.isProcessing) {
+                       currentState.isBlurred = true;
+                       console.log("模拟: 页面失活 (window.blur) 事件被触发。");
+                    }
+                }, 500);
+            }
+
+            currentState.timerId = setTimeout(() => {
+                console.log("2.5秒计时结束。检查页面是否失活...");
+                if (currentState.isBlurred) {
+                    // 唤起成功
+                    console.log("判断: 唤起成功。");
+                    hideToast(true); // FIX: 立即移除loading，防止跳动
+                    showToast('success');
+                } else {
+                    // 唤起超时/失败
+                    console.log("判断: 唤起超时/失败 (用户未安装)。");
+                    hideToast();
+                    showDownloadModal();
+                }
+            }, 2500);
+        }
+
+        // --- Event Listeners ---
+        openBtn.addEventListener('click', handleOpenClick);
+        
+        closeModalBtn.addEventListener('click', () => {
+            hideDownloadModal(resetState);
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && !downloadModal.classList.contains('hidden')) {
+                hideDownloadModal(resetState);
+            }
+        });
+
+        tabNotInstalled.addEventListener('click', () => switchScenario(false));
+        tabInstalled.addEventListener('click', () => switchScenario(true));
+
+        // --- Initial Setup ---
+        switchScenario(false); // 默认进入“未安装”场景
+
+    </script>
+</body>
+</html>
