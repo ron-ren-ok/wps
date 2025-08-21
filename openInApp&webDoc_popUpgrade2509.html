@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>下载引导流程整合演示 (Demo)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f3f4f6;
+        }
+        .demo-container {
+            width: 100%;
+            max-width: 1920px;
+            height: 1080px;
+            max-height: calc(100vh - 120px);
+            margin: auto;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            overflow: hidden;
+            position: relative; 
+        }
+        .tab-button.active {
+            border-color: #10B981;
+            color: #10B981;
+            background-color: #D1FAE5;
+        }
+        .modal-backdrop {
+            background-color: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(5px);
+            transition: opacity 0.4s ease-in-out;
+        }
+        .modal-content-shrinking {
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease-out;
+            transform-origin: bottom center;
+        }
+        @keyframes bounce-top-right {
+          0%, 100% { transform: translate(0, 0); }
+          50% { transform: translate(8px, -8px); }
+        }
+        .animate-bounce-top-right {
+          animation: bounce-top-right 2s ease-in-out infinite;
+        }
+        .new-landing-bg {
+            background: linear-gradient(180deg, #F9FAFB 0%, #FFFFFF 100%);
+        }
+        /* 动画SVG样式 */
+        .status-anim { transition: all 0.5s ease-in-out; }
+        .status-anim .icon {
+            transform-origin: center;
+            transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out;
+        }
+        .checkmark, .download-arrow {
+            stroke-dasharray: 50;
+            stroke-dashoffset: 50;
+            animation: draw-icon 0.5s ease-out forwards;
+        }
+        @keyframes draw-icon {
+            to { stroke-dashoffset: 0; }
+        }
+        /* 新增: 标题容器和淡入淡出效果 */
+        .title-container {
+            min-height: 112px; /* 预留足够高度防止抖动 */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #landing-page-title {
+            transition: opacity 0.3s ease-in-out;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 p-4 md:p-8 flex flex-col items-center justify-center min-h-screen">
+
+    <div class="w-full max-w-7xl mb-4">
+        <h1 class="text-2xl font-bold text-gray-800 text-center">下载引导流程整合演示 (Demo)</h1>
+        <p class="text-center text-gray-500 mt-1">请选择一个场景来触发或查看</p>
+    </div>
+
+    <!-- Tab切换 -->
+    <div id="tabs" class="flex flex-wrap justify-center space-x-2 mb-4">
+        <button data-tab="cloud_doc" class="tab-button active text-sm md:text-base font-semibold py-2 px-4 rounded-lg border-2 border-transparent transition-all duration-300">
+            <i class="fas fa-file-alt mr-2"></i>云文档弹窗
+        </button>
+        <button data-tab="installed" class="tab-button text-sm md:text-base font-semibold py-2 px-4 rounded-lg border-2 border-transparent transition-all duration-300">
+            <i class="fas fa-check-circle mr-2"></i>新尾链落地页 (已安装)
+        </button>
+        <button data-tab="not_installed" class="tab-button text-sm md:text-base font-semibold py-2 px-4 rounded-lg border-2 border-transparent transition-all duration-300">
+            <i class="fas fa-download mr-2"></i>新尾链落地页 (未安装)
+        </button>
+    </div>
+
+    <!-- 模拟设备容器 -->
+    <div class="demo-container bg-white rounded-xl flex flex-col">
+        <!-- 场景1: 云文档页面 -->
+        <div id="cloud_doc" class="tab-content w-full h-full p-8 flex flex-col items-center justify-center text-center">
+            <img src="https://play-lh.googleusercontent.com/7uk1-zZ0dJwW-rftl6vqduw26ldbxYTCxFhPwown2W4kGkIl32b4H14LltStdKDterCO=s96-rw" alt="WPS Logo" class="w-24 h-24 mb-4">
+            <h2 class="text-3xl font-bold text-gray-800">我的云文档</h2>
+            <p class="text-gray-500 mt-2">这是一个模拟的WPS云文档页面。</p>
+            <button id="trigger-cloud" class="mt-8 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg shadow-lg transition-transform transform hover:scale-105">
+                <i class="fas fa-desktop mr-2"></i>模拟导量按钮点击
+            </button>
+        </div>
+        
+        <!-- 场景2 & 3: 新尾链落地页 -->
+        <div id="new_landing_page" class="tab-content hidden w-full h-full new-landing-bg p-8 flex-col items-center justify-center">
+            <div class="text-center w-full max-w-4xl">
+                <img src="https://play-lh.googleusercontent.com/7uk1-zZ0dJwW-rftl6vqduw26ldbxYTCxFhPwown2W4kGkIl32b4H14LltStdKDterCO=s96-rw" alt="WPS Logo" class="h-16 w-16 mx-auto">
+                <!-- 更新: 标题容器 -->
+                <div class="title-container mt-4">
+                    <h2 id="landing-page-title" class="text-4xl font-bold text-gray-800">Opening the document for you...</h2>
+                </div>
+                <p class="text-lg text-gray-500 mt-2">WPS Office: Free All-in-One Office Suite with PDF editor</p>
+                <div id="status-animation" class="my-8 h-24 flex flex-col items-center justify-center">
+                    <div id="spinner" class="animate-spin rounded-full h-20 w-20 border-t-4 border-b-4 border-blue-500"></div>
+                    <svg class="status-anim h-20 w-20 hidden" viewBox="0 0 100 100">
+                        <polyline class="icon checkmark" id="success-icon" stroke="#10B981" stroke-width="8" points="30,55 45,70 70,40" fill="none" stroke-linecap="round" stroke-linejoin="round" style="opacity: 0;"/>
+                        <g class="icon" id="download-icon" stroke="#3B82F6" stroke-width="8" fill="none" stroke-linecap="round" stroke-linejoin="round" style="opacity: 0;">
+                           <path class="download-arrow" d="M 50 30 L 50 70 M 35 55 L 50 70 L 65 55" />
+                        </g>
+                    </svg>
+                </div>
+                <div class="mt-8 inline-flex items-center space-x-4 border-t border-b border-gray-200 py-4 px-8">
+                    <i class="fas fa-file-powerpoint text-red-500 text-5xl flex-shrink-0"></i>
+                    <div class="text-left">
+                        <h3 class="text-xl font-semibold text-gray-800">Annual Report.pptx</h3>
+                        <p class="text-sm text-gray-500">WPS Presentation Document</p>
+                    </div>
+                </div>
+                <div class="mt-12 w-full max-w-3xl mx-auto">
+                    <div class="grid grid-cols-3 gap-8">
+                        <div class="text-center"><i class="fas fa-users text-3xl text-blue-500"></i><p class="text-2xl font-bold text-gray-800 mt-2">200 Million</p><p class="text-sm text-gray-500">Users Have Chosen</p></div>
+                        <div class="text-center"><i class="fas fa-star text-3xl text-yellow-500"></i><p class="text-2xl font-bold text-gray-800 mt-2">4 Million</p><p class="text-sm text-gray-500">5-star Reviews</p></div>
+                        <div class="text-center"><i class="fas fa-globe-americas text-3xl text-green-500"></i><p class="text-2xl font-bold text-gray-800 mt-2">200+</p><p class="text-sm text-gray-500">Countries</p></div>
+                    </div>
+                </div>
+                 <div id="trouble-link-container" class="mt-12 opacity-0 transition-opacity duration-500">
+                    <p class="text-gray-500">Having trouble? <a href="#" id="trouble-link" class="text-blue-600 font-semibold hover:underline">Download WPS Office Free</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 下载弹窗 (全局复用) -->
+    <div id="phase1-modal" class="fixed inset-0 z-50 items-center justify-center hidden modal-backdrop">
+        <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-3xl p-8 m-4 transform transition-all duration-300 scale-95 opacity-0 modal-content-shrinking">
+            <div class="hidden md:block absolute -top-20 -right-20 w-48 h-48 animate-bounce-top-right z-20 pointer-events-none">
+                <img src="https://website-prod.cache.wpscdn.com/img/arrow_to_download.5909621.png" alt="Arrow pointing to download location">
+            </div>
+            <button id="close-phase1-modal" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors z-10">
+                <i class="fas fa-times text-2xl"></i>
+            </button>
+            <div class="flex items-center justify-center text-green-600 font-semibold mb-2 text-lg">
+                <i class="fas fa-check-circle mr-2"></i>
+                <span>Download complete!</span>
+            </div>
+            <h2 id="modal-title" class="text-2xl font-semibold text-gray-800 text-center"></h2>
+            <div class="mt-6 bg-gray-100 rounded-lg p-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+                    <div class="text-left">
+                        <div class="flex flex-col space-y-4">
+                            <div class="flex items-start"><div class="flex-shrink-0 w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center font-bold text-lg">1</div><div class="ml-4"><h3 class="font-semibold text-gray-700">Find Installer</h3><p class="text-sm text-gray-500">Check your browser's download bar or "Downloads" folder.</p></div></div>
+                            <div class="flex items-start"><div class="flex-shrink-0 w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center font-bold text-lg">2</div><div class="ml-4"><h3 class="font-semibold text-gray-700">Click to install</h3><p class="text-sm text-gray-500">Double click on <code class="bg-gray-200 text-red-600 px-1 py-0.5 rounded">wps_wid.exe</code> to start the installation.</p></div></div>
+                            <div id="modal-try-again-container" class="flex items-start hidden pt-2"><div class="flex-shrink-0 w-8 h-8"></div><div class="ml-4 text-sm text-gray-500"><span>Download didn't start? </span><a href="#" id="modal-try-again-link" class="font-semibold text-blue-600 hover:underline">Try again</a></div></div>
+                        </div>
+                    </div>
+                    <div class="text-center">
+                        <h3 class="font-semibold text-gray-700 mb-2">Quick Demo</h3>
+                        <div class="mt-2"><video class="rounded-lg shadow-md w-full" autoplay loop muted playsinline><source src="https://cint.sfml.online/assets/videos/download-video-safe-browse.mp4" type="video/mp4"></video></div>
+                    </div>
+                </div>
+            </div>
+             <div class="mt-8 text-center text-xs text-gray-500">By installing this app you agree to our <a href="https://www.wps.com/privacy-policy/" target="_blank" class="underline hover:text-blue-600">Terms</a>.</div>
+        </div>
+    </div>
+
+    <!-- 引导栏 (全局复用) -->
+    <div id="phase2-guidance-bar" class="absolute bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 shadow-[0_-2px_10px_rgba(0,0,0,0.05)] z-40 flex items-center justify-between transform transition-transform duration-500 translate-y-full">
+        <p class="text-gray-700 text-sm md:text-base"><i class="fas fa-download text-blue-500 mr-2"></i><span>已为您下载WPS Office... 完成后，请在您浏览器的下载内容中找到并双击 wps_wid.exe 文件进行安装。</span><a href="#" id="show-help-link" class="text-blue-600 hover:underline font-semibold ml-2">查看图文步骤</a><a href="#" id="try-again-link" class="text-red-600 hover:underline font-semibold ml-4">下载未开始？重试</a></p>
+        <button id="close-guidance-bar" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times text-xl"></i></button>
+    </div>
+
+<script>
+    // --- 全局元素 ---
+    const tabs = document.querySelectorAll('.tab-button');
+    const tabContents = document.querySelectorAll('.tab-content');
+    
+    // --- 弹窗流程元素 ---
+    const popupTrigger = document.getElementById('trigger-cloud');
+    const phase1Modal = document.getElementById('phase1-modal');
+    const phase1ModalContent = phase1Modal.querySelector('div');
+    const modalTitle = document.getElementById('modal-title');
+    const closePhase1ModalBtn = document.getElementById('close-phase1-modal');
+    const modalTryAgainContainer = document.getElementById('modal-try-again-container');
+    const modalTryAgainLink = document.getElementById('modal-try-again-link');
+    const guidanceBar = document.getElementById('phase2-guidance-bar');
+    const showHelpLink = document.getElementById('show-help-link');
+    const barTryAgainLink = document.getElementById('try-again-link');
+    const closeGuidanceBarBtn = document.getElementById('close-guidance-bar');
+
+    // --- 落地页流程元素 ---
+    const landingPageTitle = document.getElementById('landing-page-title');
+    const spinner = document.getElementById('spinner');
+    const statusAnimationSVG = document.querySelector('.status-anim');
+    const successIcon = document.getElementById('success-icon');
+    const downloadIcon = document.getElementById('download-icon');
+    const troubleLinkContainer = document.getElementById('trouble-link-container');
+    const troubleLink = document.getElementById('trouble-link');
+
+    const docNames = {
+        cloud_doc: 'Cloud Document.docx',
+        installed: 'Annual Report.pptx',
+        not_installed: 'Annual Report.pptx'
+    };
+
+    // --- 弹窗流程函数 ---
+    function showDownloadModal(isReopen = false) {
+        const activeTabId = document.querySelector('.tab-button.active').dataset.tab;
+        modalTitle.innerHTML = `One step away from editing <span class="font-bold text-blue-600">${docNames[activeTabId]}</span>`;
+        phase1ModalContent.style.transform = 'scale(1)';
+        phase1ModalContent.style.opacity = '1';
+        phase1Modal.classList.remove('hidden', 'opacity-0');
+        phase1Modal.classList.add('flex');
+        setTimeout(() => phase1ModalContent.classList.remove('scale-95'), 10);
+        if (isReopen) modalTryAgainContainer.classList.remove('hidden');
+    }
+
+    function dismissDownloadModal() {
+        phase1ModalContent.style.transform = 'scale(0.8) translateY(100vh)';
+        phase1ModalContent.style.opacity = '0';
+        phase1Modal.classList.add('opacity-0');
+        setTimeout(() => phase1Modal.classList.add('hidden'), 400);
+        
+        const activeTabId = document.querySelector('.tab-button.active').dataset.tab;
+        const showCloseBtn = activeTabId === 'cloud_doc';
+        toggleGuidanceBar(true, showCloseBtn);
+    }
+
+    function toggleGuidanceBar(show, showCloseButton = true) {
+        const demoContainer = document.querySelector('.demo-container');
+        if (!demoContainer.contains(guidanceBar)) demoContainer.appendChild(guidanceBar);
+        closeGuidanceBarBtn.style.display = showCloseButton ? 'block' : 'none';
+        guidanceBar.classList.toggle('translate-y-full', !show);
+    }
+
+    function startPopupFlow(isInitialDownload = true) {
+        if (isInitialDownload) {
+            const activeTabId = document.querySelector('.tab-button.active').dataset.tab;
+            if (activeTabId !== 'installed' && activeTabId !== 'not_installed') {
+                resetAllStates();
+            }
+            showDownloadModal();
+            console.log("模拟下载已自动开始...");
+            setTimeout(() => {
+                if (!phase1Modal.classList.contains('hidden')) modalTryAgainContainer.classList.remove('hidden');
+            }, 3000);
+        } else {
+            console.log("模拟重新下载客户端... 界面无交互。");
+        }
+    }
+
+    // --- 落地页流程函数 ---
+    function resetLandingPageAnimation() {
+        landingPageTitle.textContent = 'Opening the document for you...';
+        landingPageTitle.style.opacity = 1;
+        spinner.style.display = 'none';
+        statusAnimationSVG.style.display = 'none';
+        [successIcon, downloadIcon].forEach(icon => {
+            icon.style.opacity = '0';
+            icon.style.animation = 'none';
+        });
+        troubleLinkContainer.style.opacity = '0';
+        troubleLinkContainer.style.display = 'block'; 
+    }
+
+    function runLandingPageAnimation(mode) {
+        resetLandingPageAnimation();
+        spinner.style.display = 'block';
+
+        setTimeout(() => {
+            spinner.style.display = 'none';
+            statusAnimationSVG.style.display = 'block';
+
+            let newTitle = '';
+            if (mode === 'installed') {
+                successIcon.style.opacity = '1';
+                void successIcon.offsetWidth;
+                successIcon.style.animation = 'draw-icon 0.5s ease-out forwards';
+                newTitle = 'Your document is now open in WPS Office.';
+                setTimeout(() => troubleLinkContainer.style.opacity = '1', 3000);
+            } else { // not_installed
+                downloadIcon.style.opacity = '1';
+                void downloadIcon.offsetWidth;
+                downloadIcon.style.animation = 'draw-icon 0.5s ease-out forwards';
+                newTitle = 'The document will open automatically after installation.';
+                setTimeout(() => startPopupFlow(true), 800);
+            }
+            
+            // 更新: 标题淡出淡入切换
+            landingPageTitle.style.opacity = 0;
+            setTimeout(() => {
+                landingPageTitle.textContent = newTitle;
+                landingPageTitle.style.opacity = 1;
+            }, 300);
+
+        }, 2000);
+    }
+
+    // --- 全局控制 ---
+    function resetAllStates() {
+        phase1Modal.classList.add('hidden', 'opacity-0');
+        phase1ModalContent.classList.add('scale-95');
+        phase1ModalContent.style.transform = '';
+        phase1ModalContent.style.opacity = '';
+        toggleGuidanceBar(false);
+        modalTryAgainContainer.classList.add('hidden');
+        resetLandingPageAnimation();
+    }
+
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            const activeTabId = tab.dataset.tab;
+            tabs.forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            
+            tabContents.forEach(content => {
+                let show = content.id === 'cloud_doc' && activeTabId === 'cloud_doc' ||
+                           content.id === 'new_landing_page' && (activeTabId === 'installed' || activeTabId === 'not_installed');
+                content.style.display = show ? 'flex' : 'none';
+            });
+
+            resetAllStates();
+
+            if (activeTabId === 'installed' || activeTabId === 'not_installed') {
+                runLandingPageAnimation(activeTabId);
+            }
+        });
+    });
+
+    // --- 事件监听绑定 ---
+    popupTrigger.addEventListener('click', () => startPopupFlow(true));
+    
+    closePhase1ModalBtn.addEventListener('click', dismissDownloadModal);
+    modalTryAgainLink.addEventListener('click', (e) => { e.preventDefault(); startPopupFlow(false); });
+    
+    showHelpLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        showDownloadModal(true); 
+        console.log("重新打开弹窗查看步骤，不重新下载。");
+    });
+
+    barTryAgainLink.addEventListener('click', (e) => { e.preventDefault(); startPopupFlow(false); });
+    closeGuidanceBarBtn.addEventListener('click', () => toggleGuidanceBar(false));
+    
+    troubleLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        troubleLinkContainer.style.display = 'none'; 
+        startPopupFlow(true);
+    });
+
+    // --- 初始化 ---
+    document.getElementById('new_landing_page').style.display = 'none';
+
+</script>
+
+</body>
+</html>
