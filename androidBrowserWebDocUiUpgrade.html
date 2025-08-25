@@ -56,7 +56,7 @@
         <div>
              <p class="text-sm font-semibold text-center text-gray-600">"编辑" 按钮</p>
              <p class="text-xs text-gray-500 mt-1 text-center">
-                <b>真实逻辑:</b> 每次点击都会触发。
+                 <b>真实逻辑:</b> 每次点击都会触发。
             </p>
         </div>
     </div>
@@ -111,16 +111,24 @@
                 <!-- 顶部区域 -->
                 <div class="flex items-start justify-between mb-3">
                     <div class="flex items-center space-x-3">
-                        <img src="https://play-lh.googleusercontent.com/7uk1-zZ0dJwW-rftl6vqduw26ldbxYTCxFhPwown2W4kGkIl32b4H14LltStdKDterCO=s96-rw" alt="WPS Office Logo" class="w-16 h-16 rounded-2xl">
+                        <img src="https://play-lh.googleusercontent.com/7uk1-zZ0dJwW-rftl6vqduw26ldbxYTCxFhPwown2W4kGkIl32b4H14LltStdKDterCO=s96-rw" alt="WPS Office Logo" class="w-16 h-16 rounded-2xl" onerror="this.onerror=null;this.src='https://placehold.co/96x96/E2E8F0/4A5568?text=WPS';">
                         <div>
                             <h3 class="font-bold text-xl">WPS Office</h3>
-                            <div class="text-sm text-gray-500">
-                                <span>4.7 ★</span> &bull; <span>120 MB</span>
+                            <!-- **关键更新**: 删除了文件大小 -->
+                            <div class="text-sm text-gray-500 flex items-center space-x-2 mt-1">
+                                <span>4.7 ★</span>
+                                <span class="text-gray-300">&bull;</span>
+                                <span class="flex items-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                                    </svg>
+                                    <span>500M+</span>
+                                </span>
                             </div>
-                             <!-- **关键更新**: 使用了您提供的base64图标 -->
+                             <!-- **关键更新**: 更新了盾牌图标地址 -->
                              <p class="text-xs text-green-600 font-semibold mt-1 flex items-center">
-                                <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAACXBIWXMAAAsTAAALEwEAmpwYAAAEJElEQVR4nNWaXYhVVRTHf5NjoZFmmZqaMmhqMvmgEBqJIKblR6nkZCL5INXgYBQ9iClmjRD1ZIWMX5GkomigiQ9qYqCEIinolBIKkan4HTQ2OTM2I0v/BzbXOWfOPvece28/2DBz71prr/299toXsmEIUAscA/5Ssb8/AZ7mf0AFsAa4DbSFlP+AbcBQSrQB3wAtcrYZ2AxMAh5XeUmfNUumRTqmW3QqgC+AW04DvgUGR+gM1Ki15OgUZYTGAdudKRT07iAPG4NyRtFsbZPtTHkSeBc46cx3G4nVeU6PYF0Fo2rlBLBQdaaCTYNq4Ect0qCic8CHQK+0KgJ6A0uAP516bJQOAO/IFy9js4G1wNmc3aYB2ARMBcrJjnLVsUl1uj6clW+vy9dQcrfKC5rHs4AuFJ6uQBWwQb7k+hfKvxJYDFRSelTKtzb5Gsp1CfWndBkgH69GCZ2T0HBKl0r5+HuU0GkJjaZ0eV4+1kcJ/SyhFyldXpaPh6OEfpDQa4Xz6+6B+KCH/Bz5uDtKaK2EPqAwPAScUokbHSyVjxbjhbJIQnUUho9V368eo7JBOhbChFIlof1kz7NAk0KfFzz0fpKPtlZCGSWhP8iWTsAR1fWlp+5l6dktNJRu6iErD5Md7zkd9oiHXj8n7usw3jsh4fFkw0AnGJzmqTtbevviCNdJ+COyYY/sb0yg+5V0l8URnuvTamEXoB4x5N6U7StAT/w55jNbKpx52DmGfA/dGus1h8OwS9g12bZDzZfeumjd8lm/Qcw1MeZo1DuL95kQuS1xTuQI3pb+LjyoldK6mPKPAgelc6Odc2GyvvsbeIpk7JMNm/qxGSGlazGnF7pBfi+9f5wdqZtzD68hGY8pbWTTqruv8m+q3BJrcbG9/WsnRTQfWKX/DwEPkIz3ZWNnEuUlSeYkUAZ8Kt1WFevJYUmc4F7jz3is2fuw7bFRjiTJAi50UkjWKUmZIhu/qJMSsT5OyByBbbNHPdZZexyQD2+RByM0Ig0d5ZEiyKcRE9SIi2mko76TMVu0heaw6rYzJG+GaOtr7ih0TpkqNeJ0mpnNVXmeyr5013SyOl9N0/ATSoh5n6wJqVNdO7Iw/oZz2idd+HGYqG37RprPCrnsVGP26rqaNn2AS6pjHhliI3FeFa1I2bYt6P2ybU9xBUlZNul8mZmiXXu1ClKh9pxQEBY4qf2xKdgL8mlXi/EO/5kqtx8DjMzDTo1G10L/MRSBMr1mBZep5xIGlq06bO25rWh0cu4fFo/N8OiE5dKz9TadEqBM2cLg5xmLOwi3uzjx281ij0R7VKt3zcGtIekhS0wcl8z5PNdWpoxxXl8tVnpFn5dpp2vUd3ZH6UuJ08fJeLQpsxiE421aU8V46k7MLGUUgwZcSjuSpYDYz5s+B1bGTKkm5g59FUitfCGRsAAAAABJRU5ErkJggg==" class="h-4 w-4 mr-1">
-                                Verified by Google Play Protect
+                                 <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAACXBIWXMAAAsTAAALEwEAmpwYAAAEJElEQVR4nNWaXYhVVRTHf5NjoZFmmZqaMmhqMvmgEBqJIKblR6nkZCL5INXgYBQ9iClmjRD1ZIWMX5GkomigiQ9qYqCEIinolBIKkan4HTQ2OTM2I0v/BzbXOWfOPvece28/2DBz71prr/299toXsmEIUAscA/5Ssb8/AZ7mf0AFsAa4DbSFlP+AbcBQSrQB3wAtcrYZ2AxMAh5XeUmfNUumRTqmW3QqgC+AW04DvgUGR+gM1Ki15OgUZYTGAdudKRT07iAPG4NyRtFsbZPtTHkSeBc46cx3G4nVeU6PYF0Fo2rlBLBQdaaCTYNq4Ect0qCic8CHQK+0KgJ6A0uAP516bJQOAO/IFy9js4G1wNmc3aYB2ARMBcrJjnLVsUl1uj6clW+vy9dQcrfKC5rHs4AuFJ6uQBWwQb7k+hfKvxJYDFRSelTKtzb5Gsp1CfWndBkgH69GCZ2T0HBKl0r5+HuU0GkJjaZ0eV4+1kcJ/SyhFyldXpaPh6OEfpDQa4Xz6+6B+KCH/Bz5uDtKaK2EPqAwPAScUokbHSyVjxbjhbJIQnUUho9V368eo7JBOhbChFIlof1kz7NAk0KfFzz0fpKPtlZCGSWhP8iWTsAR1fWlp+5l6dktNJRu6iErD5Md7zkd9oiHXj8n7usw3jsh4fFkw0AnGJzmqTtbevviCNdJ+COyYY/sb0yg+5V0l8URnuvTamEXoB4x5N6U7StAT/w55jNbKpx52DmGfA/dGus1h8OwS9g12bZDzZfeumjd8lm/Qcw1MeZo1DuL95kQuS1xTuQI3pb+LjyoldK6mPKPAgelc6Odc2GyvvsbeIpk7JMNm/qxGSGlazGnF7pBfi+9f5wdqZtzD68hGY8pbWTTqruv8m+q3BJrcbG9/WsnRTQfWKX/DwEPkIz3ZWNnEuUlSeYkUAZ8Kt1WFevJYUmc4F7jz3is2fuw7bFRjiTJAi50UkjWKUmZIhu/qJMSsT5OyByBbbNHPdZZexyQD2+RByM0Ig0d5ZEiyKcRE9SIi2mko76TMVu0heaw6rYzJG+GaOtr7ih0TpkqNeJ0mpnNVXmeyr5013SyOl9N0/ATSoh5n6wJqVNdO7Iw/oZz2idd+HGYqG37RprPCrnsVGP26rqaNn2AS6pjHhliI3FeFa1I2bYt6P2ybU9xBUlZNul8mZmiXXu1ClKh9pxQEBY4qf2xKdgL8mlXi/EO/5kqtx8DjMzDTo1G10L/MRSBMr1mBZep5xIGlq06bO25rWh0cu4fFo/N8OiE5dKz9TadEqBM2cLg5xmLOwi3uzjx281ij0R7VKt3zcGtIekhS0wcl8z5PNdWpoxxXl8tVnpFn5dpp2vUd3ZH6UuJ08fJeLQpsxiE421aU8V46k7MLGUUgwZcSjuSpYDYz5s+B1bGTKkm5g59FUitfCGRsAAAAABJRU5ErkJggg==" class="h-4 w-4 mr-1">
+                                 Verified by Google Play Protect
                              </p>
                         </div>
                     </div>
