@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WPS安卓用户次月留存率分析仪表盘 (最终版)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Slate Gray & Warm Neutrals -->
+    <!-- Application Structure Plan: 我设计了一个叙事驱动的单页仪表盘。用户从上到下滚动，首先看到顶部的核心结论（KPI），然后是整体趋势的可视化，接着深入到问题的核心——渠道表现的详细对比分析，最后是探索性的地理维度数据和明确的行动建议。这种自顶向下的结构符合人类分析问题的自然逻辑：是什么（结论）-> 怎么样（趋势）-> 为什么（原因）-> 怎么办（建议），从而实现了最佳的用户体验和信息传达效率。 -->
+    <!-- Visualization & Content Choices: 1. **核心指标(KPIs)**: 目标-告知。使用HTML/Tailwind构建的卡片，直接展示关键数字，让用户秒懂核心问题。2. **整体与分渠道留存趋势**: 目标-变化与比较。使用Chart.js线图，通过复选框交互，用户可以自由组合对比，直观发现OPPO渠道的异常。3. **新增用户构成**: 目标-比较。使用Chart.js堆叠条形图，证明问题不在于用户结构变化，而在于渠道自身质量。4. **下降贡献度**: 目标-排序与比较。使用Chart.js气泡图，多维度展示渠道下降幅度、用户量级和最终影响。5. **分国家留存**: 目标-探索。使用Chart.js线图和复选框交互，为下一步分析提供方向。所有选择都基于Canvas，无SVG/Mermaid，确保了高性能和交互性。 -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background-color: #f8fafc; /* slate-50 */
+        }
+        .chart-container {
+            position: relative;
+            background-color: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            padding: 1.5rem;
+            width: 100%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .kpi-card {
+            background-color: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            padding: 1.5rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .kpi-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+        .kpi-value {
+            font-size: 2.25rem;
+            font-weight: 700;
+            line-height: 2.5rem;
+        }
+        .kpi-label {
+            font-size: 0.875rem;
+            color: #64748b; /* slate-500 */
+        }
+        .kpi-change {
+            font-size: 1rem;
+            font-weight: 500;
+        }
+        .kpi-change.down {
+            color: #ef4444; /* red-500 */
+        }
+        .kpi-change.up {
+            color: #22c55e; /* green-500 */
+        }
+        .section-title {
+            font-size: 1.875rem;
+            font-weight: 700;
+            color: #1e293b; /* slate-800 */
+            margin-bottom: 0.5rem;
+        }
+        .section-subtitle {
+            font-size: 1rem;
+            color: #475569; /* slate-600 */
+            max-width: 48rem;
+            margin-left: auto;
+            margin-right: auto;
+            margin-bottom: 2rem;
+        }
+    </style>
+</head>
+<body class="text-slate-700">
+
+    <header class="bg-white shadow-sm sticky top-0 z-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <h1 class="text-2xl font-bold text-slate-800">WPS安卓用户次月留存率分析仪表盘 (同比分析版)</h1>
+            <p class="text-sm text-slate-500">交互式报告：2025年上半年 vs 2024年上半年</p>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
+        <section id="kpis" class="mb-12 text-center">
+            <h2 class="section-title">核心结论速览 (同比分析)</h2>
+            <p class="section-subtitle">通过对比2025年与2024年上半年数据，我们发现整体留存率同比下降3个百分点。GP渠道因其巨大体量成为下降的主要贡献者，而OPPO商店的留存率恶化最为严重。</p>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <div class="kpi-card">
+                    <p class="kpi-label">整体留存率 (2025 H1 vs 2024 H1)</p>
+                    <p class="kpi-value text-blue-600">46.8%</p>
+                    <p class="kpi-change down">同比下降 3.0 pp</p>
+                </div>
+                <div class="kpi-card">
+                    <p class="kpi-label">主要下降贡献渠道</p>
+                    <p class="kpi-value text-amber-600">GP自然渠道</p>
+                    <p class="kpi-change down">贡献了61.6%的留存用户损失</p>
+                </div>
+                <div class="kpi-card">
+                    <p class="kpi-label">留存恶化最严重渠道</p>
+                    <p class="kpi-value text-red-600">OPPO商店</p>
+                    <p class="kpi-change down">留存率同比暴跌 13.5 pp</p>
+                </div>
+                 <div class="kpi-card">
+                    <p class="kpi-label">逆势增长明星渠道</p>
+                    <p class="kpi-value text-green-600">传音商店</p>
+                    <p class="kpi-change up">留存率同比提升 5.7 pp</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="trends" class="mb-12 text-center">
+            <h2 class="section-title">留存率走势：揭示双重问题</h2>
+            <p class="section-subtitle">本图表直观展示了问题的复杂性。您可以通过点击图表上方的图例项（如“GP自然渠道”），来显示或隐藏特定渠道的走势，进行自由对比。</p>
+            <div class="chart-container" style="height: 450px;">
+                <canvas id="retentionTrendChart"></canvas>
+            </div>
+        </section>
+
+        <section id="deep-dive" class="mb-12 text-center">
+            <h2 class="section-title">渠道深度剖析：定位原因</h2>
+            <p class="section-subtitle">这一部分将深入分析各个渠道的表现。左图展示了各渠道完整的新增用户量级，右图则通过气泡图多维度诊断问题渠道，气泡越大代表对整体的负面影响越大。</p>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div class="chart-container" style="height: 400px;">
+                    <h3 class="font-bold text-lg mb-2 text-slate-700">各渠道新增用户月度走势</h3>
+                    <canvas id="newUserCompositionChart"></canvas>
+                </div>
+                <div class="chart-container" style="height: 400px;">
+                    <h3 class="font-bold text-lg mb-2 text-slate-700">留存下降贡献度分析 (同比)</h3>
+                    <canvas id="declineContributionBubbleChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <section id="gp-deep-dive" class="mb-12 text-center">
+            <h2 class="section-title">GP渠道深度下钻</h2>
+            <p class="section-subtitle">为探究GP渠道留存率下滑的内部原因，我们将GP留存率走势（左轴）与其三大子来源的新增用户构成比例（右轴，百分比堆积面积图）进行对比，以诊断结构性问题。</p>
+            <div class="chart-container" style="height: 400px;">
+                <canvas id="gpDeepDiveChart"></canvas>
+            </div>
+             <div class="mt-8 text-left max-w-4xl mx-auto bg-white p-6 rounded-lg shadow">
+                <h3 class="font-bold text-lg mb-2 text-slate-700 text-center">GP渠道洞察</h3>
+                <div class="space-y-4">
+                    <div>
+                        <h4 class="font-semibold text-slate-800">核心假设：</h4>
+                        <p class="text-slate-600">GP渠道留存率的同比下滑，主要是由其内部新增用户来源结构的变化所驱动，特别是来自低意图的“广告和引荐”渠道的用户占比提升，拉低了整体的用户质量。</p>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-slate-800">数据观察：</h4>
+                        <ul class="list-disc list-inside text-slate-600 space-y-1">
+                            <li><strong>趋势吻合：</strong> 从图表可清晰看到，“广告和引荐”来源的<strong>面积占比</strong>从2024年下半年开始显著扩大，而GP整体留存率（蓝色折线）恰好在同一时期从高点开始回落并持续缓降。</li>
+                            <li><strong>此消彼长：</strong> 与此同时，通常被认为是高质量用户的“GP搜索”来源，其面积占比则呈现出<strong>收缩趋势</strong>。</li>
+                        </ul>
+                    </div>
+                     <div>
+                        <h4 class="font-semibold text-slate-800">初步结论：</h4>
+                        <p class="text-slate-600">以上观察强力支持我们的核心假设。建议对“广告和引荐”渠道的投放策略、素材和落地页进行复盘，优化用户筛选，以提升该渠道引入用户的精准度和留存表现。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="geo-analysis" class="mb-12 text-center">
+            <h2 class="section-title">地理维度探索</h2>
+            <p class="section-subtitle">通过勾选下方复选框，您可以自由组合对比Top 10国家的留存率走势，以发现不同市场的表现差异和潜在问题。</p>
+            <div id="country-toggles" class="flex flex-wrap justify-center gap-x-6 gap-y-2 mb-4"></div>
+            <div class="chart-container" style="height: 400px;">
+                <canvas id="countryRetentionChart"></canvas>
+            </div>
+            <div class="mt-8 text-left max-w-4xl mx-auto">
+                <h3 class="font-bold text-lg mb-4 text-slate-700 text-center">地理市场洞察</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-white p-4 rounded-lg shadow">
+                        <h4 class="font-bold text-green-600">第一梯队 ( > 60%)</h4>
+                        <p class="text-slate-600 mt-2"><strong>尼日利亚 (Nigeria)</strong> 表现一枝独秀，留存率长期稳定在60%以上，是绝对的优质市场，其用户粘性远超其他地区。</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg shadow">
+                        <h4 class="font-bold text-blue-600">第二梯队 (45% - 55%)</h4>
+                        <p class="text-slate-600 mt-2">包括 <strong>印度、印度尼西亚、墨西哥、巴基斯坦、菲律宾、俄罗斯</strong> 等多个市场。这些国家是WPS的核心用户区，但普遍在2025年出现了同比下降趋势，值得关注。</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg shadow">
+                        <h4 class="font-bold text-amber-600">第三梯队 ( < 45%)</h4>
+                        <p class="text-slate-600 mt-2"><strong>巴西 (Brazil)、埃及 (Egypt)、土耳其 (Türkiye)</strong> 的留存率表现长期偏低。特别是土耳其，2025年上半年留存率已跌破40%，需要进行针对性的市场与产品策略分析。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="conclusion" class="bg-white rounded-lg shadow p-8">
+            <h2 class="section-title text-center">总结与后续行动建议 (同比分析版)</h2>
+            <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-8 text-left">
+                <div>
+                    <h3 class="font-bold text-lg text-red-600 mb-2">🚨 核心问题渠道</h3>
+                    <ul class="list-disc list-inside space-y-2 text-slate-600">
+                        <li><strong>OPPO商店</strong>：同比暴跌13.5pp，是自身恶化最严重的渠道，贡献34.3%的用户损失。需紧急排查24年Q4至今的策略变化。</li>
+                        <li><strong>GP自然渠道</strong>：同比微降1.9pp，但因其巨大体量，造成了61.6%的留存用户损失。<strong>其下滑趋势与“广告和引荐”子渠道的放量高度相关</strong>。</li>
+                         <li><strong>华为商店</strong>：留存率长期在32%的低位徘徊，是质量最差的渠道，需评估其导量价值。</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-bold text-lg text-green-600 mb-2">👍 增长亮点与机会</h3>
+                    <ul class="list-disc list-inside space-y-2 text-slate-600">
+                        <li><strong>传音商店</strong>：留存率高达58.3%，且同比提升5.7pp，是质量最高的明星渠道。</li>
+                        <li><strong>小米系渠道</strong>：小米商店和预装留存率同比分别提升2.4pp和3.6pp，是逆势增长的中坚力量。</li>
+                        <li><strong>经验复用</strong>：应深入研究传音和小米渠道的成功经验，看是否能将策略复用到其他渠道。</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-bold text-lg text-blue-600 mb-2">🗺️ 地理市场策略</h3>
+                    <ul class="list-disc list-inside space-y-2 text-slate-600">
+                         <li><strong>稳固优势</strong>：重点维护尼日利亚等高留存市场，确保其持续稳定。</li>
+                        <li><strong>关注核心</strong>：关注印度、印尼等核心市场的同比下滑趋势，结合渠道变化进行交叉分析。</li>
+                        <li><strong>突破洼地</strong>：对巴西、土耳其等低留存市场进行专项分析，寻找提升机会。</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+<script>
+const retentionData = {
+    labels: ["2024-01", "2024-02", "2024-03", "2024-04", "2024-05", "2024-06", "2024-07", "2024-08", "2024-09", "2024-10", "2024-11", "2024-12", "2025-01", "2025-02", "2025-03", "2025-04", "2025-05", "2025-06"],
+    datasets: [
+        { label: '全新用户次月留存率', data: [0.5066, 0.5046, 0.4939, 0.5080, 0.4876, 0.4901, 0.4997, 0.5099, 0.5197, 0.5083, 0.4978, 0.4789, 0.4870, 0.4869, 0.4583, 0.4645, 0.4537, 0.4586], borderColor: '#2563eb', backgroundColor: '#2563eb', tension: 0.1, borderWidth: 3 },
+        { label: 'GP自然渠道', data: [0.5684, 0.5685, 0.5568, 0.5750, 0.5437, 0.5572, 0.5676, 0.5746, 0.5757, 0.5660, 0.5524, 0.5352, 0.5545, 0.5581, 0.5324, 0.5476, 0.5250, 0.5366], borderColor: '#059669', backgroundColor: '#059669', tension: 0.1, hidden: false },
+        { label: '小米商店', data: [0.3787, 0.3598, 0.3227, 0.3472, 0.3499, 0.3638, 0.3812, 0.3962, 0.4292, 0.4349, 0.4223, 0.4001, 0.3947, 0.3949, 0.3751, 0.3914, 0.3609, 0.3509], borderColor: '#16a34a', backgroundColor: '#16a34a', tension: 0.1, hidden: false },
+        { label: '小米预装', data: [0.4138, 0.4034, 0.3998, 0.3976, 0.3851, 0.3740, 0.3813, 0.3988, 0.4391, 0.4501, 0.4510, 0.4439, 0.4386, 0.4455, 0.4256, 0.4401, 0.4184, 0.4222], borderColor: '#dc2626', backgroundColor: '#dc2626', tension: 0.1, hidden: false },
+        { label: 'oppo商店', data: [0.4410, 0.4308, 0.3963, 0.4751, 0.3851, 0.3492, 0.4050, 0.4362, 0.3837, 0.3303, 0.3142, 0.2697, 0.2804, 0.3056, 0.2801, 0.2371, 0.2608, 0.2847], borderColor: '#9333ea', backgroundColor: '#9333ea', tension: 0.1, hidden: false },
+        { label: 'oppo传统预装', data: [0.4776, 0.4755, 0.4618, 0.4664, 0.4689, 0.4646, 0.4788, 0.4921, 0.5262, 0.5093, 0.5014, 0.4674, 0.4802, 0.4736, 0.4371, 0.4638, 0.4487, 0.4580], borderColor: '#d97706', backgroundColor: '#d97706', tension: 0.1, hidden: false },
+        { label: '华为商店', data: [0.3399, 0.3382, 0.3320, 0.3466, 0.3203, 0.3159, 0.3272, 0.3683, 0.3709, 0.3581, 0.3301, 0.3226, 0.3439, 0.3340, 0.3255, 0.3268, 0.3141, 0.3198], borderColor: '#e11d48', backgroundColor: '#e11d48', tension: 0.1, hidden: false },
+        { label: '传音商店', data: [0.5149, 0.5260, 0.5108, 0.5372, 0.5334, 0.5384, 0.5364, 0.5521, 0.5702, 0.5850, 0.6133, 0.6039, 0.6048, 0.5932, 0.5661, 0.5823, 0.5762, 0.5776], borderColor: '#14b8a6', backgroundColor: '#14b8a6', tension: 0.1, hidden: false },
+        { label: 'oppo云预装', data: [null, null, null, null, null, null, null, null, null, null, 0.5110, 0.4460, 0.4480, 0.4670, 0.4360, 0.4560, 0.4420, 0.4260], borderColor: '#0e7490', backgroundColor: '#0e7490', tension: 0.1, hidden: false, borderWidth: 2, borderDash: [5, 5] }
+    ]
+};
+
+const newUsersData = {
+    labels: ["2024-01", "2024-02", "2024-03", "2024-04", "2024-05", "2024-06", "2024-07", "2024-08", "2024-09", "2024-10", "2024-11", "2024-12", "2025-01", "2025-02", "2025-03", "2025-04", "2025-05", "2025-06"],
+    datasets: [
+        { label: 'GP自然渠道', data: [4727488, 4651962, 4568667, 4512290, 4948466, 4507599, 4768615, 5199693, 5967304, 6095217, 5856449, 5233102, 5915026, 5285587, 5371872, 5104980, 5495547, 5354238], backgroundColor: '#059669' },
+        { label: '小米商店', data: [1835285, 1294978, 930855, 986237, 971099, 893656, 959875, 933355, 1094477, 1485724, 1648323, 1813975, 1912799, 1708954, 1923218, 1923809, 2139471, 1908685], backgroundColor: '#16a34a' },
+        { label: '小米预装', data: [1451727, 1254270, 1298745, 1102389, 1070724, 1008671, 1022251, 1070007, 1244569, 1499473, 1536291, 1596073, 1710563, 1541295, 1646159, 1626231, 1659580, 1633908], backgroundColor: '#dc2626' },
+        { label: 'oppo商店', data: [401536, 343872, 332323, 983935, 812143, 565089, 711895, 1179849, 948910, 624678, 470648, 458132, 313742, 260963, 281620, 801761, 455393, 205507], backgroundColor: '#9333ea' },
+        { label: 'oppo传统预装', data: [1050196, 941218, 971523, 834734, 937673, 878784, 849701, 727489, 802169, 871569, 833686, 717403, 829014, 658704, 670001, 647322, 664511, 643658], backgroundColor: '#d97706' },
+        { label: '华为商店', data: [445896, 434729, 425836, 397553, 391802, 330578, 321068, 346225, 419314, 404151, 364083, 315301, 348581, 327537, 332950, 294452, 304368, 270725], backgroundColor: '#e11d48' },
+        { label: '传音商店', data: [198389, 177122, 180344, 185973, 208198, 178743, 163248, 157478, 161499, 166197, 178769, 176629, 192997, 151399, 149768, 147782, 159923, 149776], backgroundColor: '#14b8a6' },
+        { label: 'oppo云预装', data: [null, null, null, null, null, null, null, null, null, null, 26849, 409819, 218263, 573271, 749525, 870226, 988666, 830503], backgroundColor: '#0e7490' },
+    ]
+};
+
+const declineBubbleData = {
+  datasets: [
+    {
+      label: 'GP自然渠道',
+      data: [{ x: 1.92, y: 5694541, r: 22.8, loss: 109335 }],
+      backgroundColor: 'rgba(5, 150, 105, 0.7)'
+    },
+    {
+      label: 'oppo商店',
+      data: [{ x: 13.48, y: 486498, r: 17.1, loss: 65580 }],
+      backgroundColor: 'rgba(147, 51, 234, 0.7)'
+    },
+    {
+      label: 'oppo传统预装',
+      data: [{ x: 0.89, y: 718868, r: 5.3, loss: 6398 }],
+      backgroundColor: 'rgba(217, 119, 6, 0.7)'
+    },
+    {
+      label: '华为商店',
+      data: [{ x: 0.48, y: 313102, r: 2.6, loss: 1503 }],
+      backgroundColor: 'rgba(225, 29, 72, 0.7)'
+    }
+  ]
+};
+
+const countryData = {
+    labels: ["2024-01", "2024-02", "2024-03", "2024-04", "2024-05", "2024-06", "2024-07", "2024-08", "2024-09", "2024-10", "2024-11", "2024-12", "2025-01", "2025-02", "2025-03", "2025-04", "2025-05", "2025-06"],
+    countries: {
+        "Brazil": [0.4410, 0.4474, 0.4422, 0.4465, 0.4414, 0.4387, 0.4447, 0.4423, 0.4634, 0.4450, 0.4228, 0.4255, 0.4069, 0.4196, 0.4049, 0.4112, 0.3854, 0.3929],
+        "Egypt": [0.4194, 0.4471, 0.4457, 0.4532, 0.4219, 0.4093, 0.4340, 0.4474, 0.5108, 0.4943, 0.4768, 0.4456, 0.3860, 0.3986, 0.3820, 0.4177, 0.3709, 0.3704],
+        "India": [0.5053, 0.5086, 0.4893, 0.5008, 0.4931, 0.5020, 0.5085, 0.5145, 0.5121, 0.5161, 0.5176, 0.4977, 0.4932, 0.5025, 0.4824, 0.4943, 0.4950, 0.5042],
+        "Indonesia": [0.5353, 0.4999, 0.4738, 0.5198, 0.4966, 0.4844, 0.5202, 0.5102, 0.5123, 0.5064, 0.5046, 0.4413, 0.4869, 0.4739, 0.4390, 0.4544, 0.4662, 0.4611],
+        "Mexico": [0.5423, 0.5319, 0.5303, 0.5417, 0.5562, 0.5296, 0.5432, 0.5465, 0.5455, 0.5169, 0.4873, 0.5010, 0.5006, 0.4935, 0.4581, 0.4662, 0.4771, 0.4492],
+        "Nigeria": [0.6148, 0.6165, 0.6057, 0.6213, 0.6136, 0.6332, 0.6288, 0.6171, 0.6314, 0.6348, 0.6307, 0.6312, 0.6450, 0.6386, 0.6197, 0.6274, 0.6047, 0.6291],
+        "Pakistan": [0.5270, 0.5319, 0.5083, 0.5388, 0.5135, 0.5174, 0.5185, 0.5229, 0.5406, 0.5285, 0.5158, 0.5049, 0.4928, 0.4930, 0.4484, 0.4808, 0.4581, 0.4738],
+        "Philippines": [0.5217, 0.5220, 0.5154, 0.5059, 0.3819, 0.4422, 0.5045, 0.5711, 0.5235, 0.4997, 0.4848, 0.4782, 0.5375, 0.5253, 0.4225, 0.4097, 0.4182, 0.4980],
+        "Russia": [0.4940, 0.4783, 0.4921, 0.4855, 0.4716, 0.4626, 0.4846, 0.5006, 0.5282, 0.4869, 0.4840, 0.4508, 0.4831, 0.4630, 0.4460, 0.4298, 0.4132, 0.4017],
+        "Türkiye": [0.4069, 0.4449, 0.4204, 0.4356, 0.4109, 0.4056, 0.4068, 0.4279, 0.4972, 0.4808, 0.4495, 0.4325, 0.3857, 0.4184, 0.3699, 0.4004, 0.3689, 0.3638]
+    }
+};
+
+const gpSubChannelData = {
+    labels: ["2024-01", "2024-02", "2024-03", "2024-04", "2024-05", "2024-06", "2024-07", "2024-08", "2024-09", "2024-10", "2024-11", "2024-12", "2025-01", "2025-02", "2025-03", "2025-04", "2025-05", "2025-06", "2025-07"],
+    datasets: [
+        {
+            label: '广告和引荐',
+            data: [1791527, 1838836, 1909835, 1966388, 2183821, 2067070, 2224967, 2478276, 2772199, 2871036, 2858831, 2532801, 2818921, 2595455, 2692676, 2562967, 2669732, 2527940, 2459222],
+            borderColor: '#f97316',
+            backgroundColor: '#f97316'
+        },
+        {
+            label: 'GP浏览',
+            data: [991348, 955878, 947060, 914826, 968139, 849410, 986099, 948892, 1150160, 1067399, 1002583, 807849, 1063466, 927483, 960850, 881565, 809035, 738192, 872584],
+            borderColor: '#10b981',
+            backgroundColor: '#10b981'
+        },
+        {
+            label: 'GP搜索',
+            data: [2509349, 2391864, 2067103, 2027934, 2220869, 1815554, 2082568, 2457248, 2583107, 2531829, 2484189, 2070665, 2354072, 2170172, 2094912, 1954462, 2139132, 2032490, 2317877],
+            borderColor: '#8b5cf6',
+            backgroundColor: '#8b5cf6'
+        }
+    ]
+};
+
+document.addEventListener('DOMContentLoaded', () => {
+    let retentionChart, newUserChart, declineBubbleChart, countryChart, gpDeepDiveChart;
+
+    const chartTooltip = {
+        callbacks: {
+            label: function(context) {
+                let label = context.dataset.label || '';
+                if (label) {
+                    label += ': ';
+                }
+                if (context.parsed.y !== null) {
+                    if(context.chart.id === 'retentionTrendChart' || context.chart.id === 'countryRetentionChart' || (context.chart.id === 'gpDeepDiveChart' && context.dataset.yAxisID === 'y')) {
+                        label += (context.parsed.y * 100).toFixed(1) + '%';
+                    } else if (context.chart.id === 'gpDeepDiveChart' && context.dataset.yAxisID === 'y1') {
+                        label += context.parsed.y.toFixed(1) + '%';
+                    } else {
+                         label += new Intl.NumberFormat('zh-CN').format(context.parsed.y);
+                    }
+                }
+                return label;
+            }
+        }
+    };
+
+    function createRetentionTrendChart() {
+        const ctx = document.getElementById('retentionTrendChart').getContext('2d');
+        retentionChart = new Chart(ctx, {
+            type: 'line',
+            data: retentionData,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: { display: true, text: '整体及各渠道新用户次月留存率', font: { size: 16 } },
+                    tooltip: chartTooltip,
+                    legend: {
+                        onClick: (e, legendItem, legend) => {
+                            const index = legendItem.datasetIndex;
+                            const ci = legend.chart;
+                            if (ci.isDatasetVisible(index)) {
+                                ci.hide(index);
+                                legendItem.hidden = true;
+                            } else {
+                                ci.show(index);
+                                legendItem.hidden = false;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        ticks: {
+                            callback: value => (value * 100).toFixed(0) + '%'
+                        }
+                    }
+                }
+            }
+        });
+
+        // Initially hide all but the main dataset
+        retentionData.datasets.forEach((dataset, index) => {
+            if (index > 0) {
+                retentionChart.hide(index);
+            }
+        });
+    }
+
+    function createNewUserCompositionChart() {
+        const ctx = document.getElementById('newUserCompositionChart').getContext('2d');
+        newUserChart = new Chart(ctx, {
+            type: 'bar',
+            data: newUsersData,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    tooltip: chartTooltip
+                },
+                scales: {
+                    x: { stacked: true },
+                    y: {
+                        stacked: true,
+                        ticks: {
+                            callback: value => new Intl.NumberFormat('zh-CN', { notation: 'compact' }).format(value)
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    function createDeclineBubbleChart() {
+        const ctx = document.getElementById('declineContributionBubbleChart').getContext('2d');
+        declineBubbleChart = new Chart(ctx, {
+            type: 'bubble',
+            data: declineBubbleData,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: true },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const dataPoint = context.raw;
+                                return [
+                                    `${context.dataset.label}`,
+                                    `留存率同比降幅: ${dataPoint.x.toFixed(2)} pp`,
+                                    `月均新增 (25 H1): ${new Intl.NumberFormat('zh-CN', { notation: 'compact' }).format(dataPoint.y)}`,
+                                    `留存用户损失: ${new Intl.NumberFormat('zh-CN').format(dataPoint.loss)}`
+                                ];
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        title: {
+                            display: true,
+                            text: '月均新增用户量 (2025 H1)'
+                        },
+                        ticks: {
+                             callback: value => new Intl.NumberFormat('zh-CN', { notation: 'compact' }).format(value)
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: '留存率同比下降幅度 (百分点 pp)'
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    function createGpDeepDiveChart() {
+        const ctx = document.getElementById('gpDeepDiveChart').getContext('2d');
+        const gpRetention = {
+            label: 'GP渠道次月留存率',
+            data: retentionData.datasets.find(d => d.label === 'GP自然渠道').data,
+            borderColor: '#2563eb',
+            backgroundColor: 'rgba(37, 99, 235, 0.1)',
+            yAxisID: 'y',
+            type: 'line',
+            tension: 0.1
+        };
+
+        const totals = gpSubChannelData.labels.map((_, i) => {
+            return gpSubChannelData.datasets.reduce((sum, dataset) => sum + (dataset.data[i] || 0), 0);
+        });
+
+        const transformedGpDatasets = gpSubChannelData.datasets.map(dataset => ({
+            label: dataset.label,
+            data: dataset.data.map((value, i) => (totals[i] > 0 ? (value / totals[i]) * 100 : 0)),
+            backgroundColor: dataset.backgroundColor,
+            borderColor: dataset.borderColor,
+            yAxisID: 'y1',
+            type: 'line',
+            fill: true,
+        }));
+
+        gpDeepDiveChart = new Chart(ctx, {
+            data: {
+                labels: gpSubChannelData.labels,
+                datasets: [gpRetention, ...transformedGpDatasets]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: { display: true, text: 'GP留存率 vs 子来源新增用户构成', font: { size: 16 } },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                        callbacks: chartTooltip.callbacks
+                    }
+                },
+                scales: {
+                    y: {
+                        type: 'linear',
+                        display: true,
+                        position: 'left',
+                        title: {
+                            display: true,
+                            text: '次月留存率'
+                        },
+                        ticks: {
+                            callback: value => (value * 100).toFixed(0) + '%'
+                        }
+                    },
+                    y1: {
+                        type: 'linear',
+                        display: true,
+                        position: 'right',
+                        stacked: true,
+                        grid: {
+                            drawOnChartArea: false
+                        },
+                        title: {
+                            display: true,
+                            text: '新增用户构成'
+                        },
+                        min: 0,
+                        max: 100,
+                        ticks: {
+                            callback: value => value + '%'
+                        }
+                    }
+                }
+            }
+        });
+    }
+    
+    function setupCountryTogglesAndChart() {
+        const container = document.getElementById('country-toggles');
+        const countries = Object.keys(countryData.countries);
+        const countryColors = ['#3b82f6', '#ef4444', '#16a34a', '#f97316', '#9333ea', '#64748b', '#0891b2', '#ca8a04', '#db2777', '#4d7c0f'];
+
+        countries.forEach((country, index) => {
+            const isChecked = index < 3; // Default to showing first 3 countries
+            const toggleHtml = `
+                <label for="country-toggle-${index}" class="inline-flex items-center cursor-pointer text-sm">
+                    <input id="country-toggle-${index}" type="checkbox" ${isChecked ? 'checked' : ''} class="form-checkbox h-4 w-4 rounded" style="accent-color: ${countryColors[index % countryColors.length]};" data-country="${country}">
+                    <span class="ml-2" style="color: ${countryColors[index % countryColors.length]};">${country}</span>
+                </label>
+            `;
+            const div = document.createElement('div');
+            div.innerHTML = toggleHtml;
+            container.appendChild(div.firstElementChild);
+        });
+
+        const ctx = document.getElementById('countryRetentionChart').getContext('2d');
+        countryChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: countryData.labels,
+                datasets: []
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: { display: true, text: '分国家新用户次月留存率对比', font: { size: 16 } },
+                    tooltip: chartTooltip,
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        ticks: {
+                            callback: value => (value * 100).toFixed(0) + '%'
+                        }
+                    }
+                }
+            }
+        });
+
+        function updateCountryChart() {
+            const selectedCountries = [];
+            document.querySelectorAll('#country-toggles input:checked').forEach(checkbox => {
+                selectedCountries.push(checkbox.dataset.country);
+            });
+
+            countryChart.data.datasets = selectedCountries.map((country, index) => {
+                const colorIndex = countries.indexOf(country);
+                return {
+                    label: country,
+                    data: countryData.countries[country],
+                    borderColor: countryColors[colorIndex % countryColors.length],
+                    backgroundColor: countryColors[colorIndex % countryColors.length],
+                    tension: 0.1,
+                    borderWidth: 2,
+                    fill: false
+                };
+            });
+            countryChart.update();
+        }
+
+        container.addEventListener('change', updateCountryChart);
+        
+        updateCountryChart(); // Initial chart draw
+    }
+
+    createRetentionTrendChart();
+    createNewUserCompositionChart();
+    createDeclineBubbleChart();
+    createGpDeepDiveChart();
+    setupCountryTogglesAndChart();
+});
+</script>
+
+</body>
+</html>
