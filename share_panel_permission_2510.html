@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WPS 分享设置 - 演示Demo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 2rem;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+        .demo-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
+        }
+        .phone-mockup {
+            width: 400px;
+            height: 890px;
+            background-color: #f7f8fa;
+            border-radius: 40px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2), 0 0 0 10px #1e1e1e;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .demo-tab-button {
+            transition: all 0.3s ease;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            border: 1px solid transparent;
+        }
+        .demo-tab-button.active {
+            color: #1a73e8;
+            background-color: white;
+            font-weight: 600;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .main-tab-button {
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+            color: #6b7280;
+        }
+        .main-tab-button.active {
+            color: #1a73e8;
+            border-bottom-color: #1a73e8;
+        }
+        .tab-content, .demo-content { display: none; }
+        .tab-content.active, .demo-content.active { display: block; }
+        .permission-radio input[type="radio"] { display: none; }
+        .permission-radio label {
+            cursor: pointer; padding: 1rem; border-radius: 0.75rem; transition: all 0.2s ease;
+            display: block; position: relative; background-color: #ffffff; border: 1px solid #e5e7eb;
+        }
+        .permission-radio input[type="radio"]:checked + label { border-color: #1a73e8; background-color: #e8f0fe; }
+        .premium-icon { 
+            /* No filter applied */
+        }
+        .toggle-checkbox:checked { right: 0; border-color: #1a73e8; }
+        .toggle-checkbox:checked + .toggle-label { background-color: #1a73e8; }
+    </style>
+</head>
+<body>
+
+    <div class="demo-container">
+        <!-- Demo State Tabs (Moved Outside) -->
+        <div class="flex-shrink-0 bg-gray-200 rounded-xl p-1 shadow-inner">
+            <div class="flex justify-around space-x-2">
+                <button onclick="changeDemoTab(0)" class="demo-tab-button active text-sm font-semibold">默认视图</button>
+                <button onclick="changeDemoTab(1)" class="demo-tab-button text-sm font-semibold">收到请求后</button>
+                <button onclick="changeDemoTab(2)" class="demo-tab-button text-sm font-semibold">批准请求后</button>
+            </div>
+        </div>
+
+        <div class="phone-mockup">
+            <!-- App UI -->
+            <div id="demo-content-0" class="demo-content active flex flex-col flex-grow h-full">
+                <!-- Header -->
+                <header class="flex-shrink-0 bg-white shadow-sm flex items-center justify-between p-4 h-16">
+                    <button class="text-gray-600"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" /></svg></button>
+                    <h1 class="text-lg font-bold text-gray-800">Share Settings</h1>
+                    <div class="relative">
+                        <button class="text-gray-600"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg></button>
+                    </div>
+                </header>
+                
+                <main class="flex-grow overflow-y-auto p-4 space-y-5">
+                    <!-- App Main Tabs -->
+                    <div>
+                        <h2 class="text-sm font-semibold text-gray-500 uppercase mb-3">Link Permissions</h2>
+                        <div class="bg-white p-1.5 rounded-xl flex space-x-2 shadow-sm">
+                            <button onclick="changeMainTab(this, 0)" class="main-tab-button active w-1/2 text-center font-semibold py-2 rounded-lg">Everyone with the link</button>
+                            <button onclick="changeMainTab(this, 1)" class="main-tab-button w-1/2 text-center font-semibold py-2 rounded-lg">Specific people</button>
+                        </div>
+                    </div>
+
+                    <!-- Everyone with the link Content -->
+                    <div class="tab-content active space-y-6">
+                        <div class="permission-radio space-y-3"><div class="option"><input type="radio" id="viewer-0" name="permission-0" checked><label for="viewer-0"><span class="font-semibold text-gray-800">Viewer</span><p class="text-sm text-gray-500">Can only view.</p></label></div><div class="option"><input type="radio" id="commenter-0" name="permission-0"><label for="commenter-0"><span class="font-semibold text-gray-800">Commenter</span><p class="text-sm text-gray-500">Can view and comment.</p></label></div><div class="option"><input type="radio" id="editor-0" name="permission-0"><label for="editor-0"><span class="font-semibold text-gray-800">Editor</span><p class="text-sm text-gray-500">Can view, comment and edit.</p></label></div></div>
+                        <div class="bg-white p-4 rounded-xl space-y-4 shadow-sm"><h3 class="text-md font-semibold text-gray-800">Advanced Settings</h3><div class="space-y-4">
+                            <div class="flex justify-between items-center"><span class="text-gray-700 text-sm">Link Expiration</span><select class="text-sm rounded-lg border-gray-300 focus:ring-blue-500 focus:border-blue-500 py-2 pl-3 pr-8 bg-gray-50"><option selected>30 days</option><option>7 days</option><option>Permanent 👑</option><option>Custom 👑</option></select></div>
+                            <div class="flex justify-between items-center text-sm"><span class="text-gray-700">Allow download, print, save, copy</span><div class="relative inline-block w-10 mr-2 align-middle select-none"><input type="checkbox" id="toggle-download-0" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer" checked/><label for="toggle-download-0" class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label></div></div><div class="flex justify-between items-center text-sm"><span class="text-gray-700">Allow requests to edit</span><div class="relative inline-block w-10 mr-2 align-middle select-none"><input type="checkbox" id="toggle-request-0" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer" checked/><label for="toggle-request-0" class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label></div></div></div></div>
+                    </div>
+                    <!-- Specific People Content -->
+                    <div class="tab-content space-y-4"><div class="bg-white p-4 rounded-xl shadow-sm space-y-3"><h3 class="text-md font-semibold text-gray-800">Collaborators</h3><input type="email" placeholder="Add people by email" class="w-full px-3 py-2.5 text-sm rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"><div class="pt-2 space-y-3"><div class="flex items-center justify-between"><div class="flex items-center space-x-3"><img src="https://placehold.co/40x40/7c3aed/ffffff?text=A" alt="Avatar" class="w-10 h-10 rounded-full"><div><p class="font-semibold text-gray-800">Alice</p><p class="text-sm text-gray-500">alice@example.com</p></div></div><select class="text-sm rounded-lg border-gray-300 focus:ring-blue-500 focus:border-blue-500"><option>Editor</option><option>Commenter</option><option selected>Viewer</option></select></div></div></div></div>
+                </main>
+                <!-- ADDED: Footer with Copy Link button -->
+                <footer class="flex-shrink-0 p-4 bg-white border-t border-gray-200"><button onclick="copyLink(this)" class="w-full py-3 text-lg font-semibold text-white bg-blue-600 rounded-xl hover:bg-blue-700 flex items-center justify-center space-x-2"><span>Copy Link</span></button></footer>
+            </div>
+
+            <div id="demo-content-1" class="demo-content flex flex-col flex-grow h-full">
+                <!-- Header (same) -->
+                <header class="flex-shrink-0 bg-white shadow-sm flex items-center justify-between p-4 h-16"><button class="text-gray-600"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" /></svg></button><h1 class="text-lg font-bold text-gray-800">Share Settings</h1><div class="relative"><button class="text-gray-600"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg></button></div></header>
+                <main class="flex-grow overflow-y-auto p-4 space-y-5">
+                    <div><h2 class="text-sm font-semibold text-gray-500 uppercase mb-3">Link Permissions</h2><div class="bg-white p-1.5 rounded-xl flex space-x-2 shadow-sm"><button onclick="changeMainTab(this, 0)" class="main-tab-button active w-1/2 text-center font-semibold py-2 rounded-lg">Everyone with the link</button><button onclick="changeMainTab(this, 1)" class="main-tab-button w-1/2 text-center font-semibold py-2 rounded-lg">Specific people</button></div></div>
+                    <div class="tab-content active space-y-6">
+                        <div class="bg-white p-4 rounded-xl shadow-sm space-y-3 border-2 border-amber-400"><h3 class="text-md font-semibold text-amber-600">Received Edit Requests (1)</h3><div class="flex items-center justify-between"><div class="flex items-center space-x-3"><img src="https://placehold.co/40x40/34d399/ffffff?text=B" alt="Avatar" class="w-10 h-10 rounded-full"><div><p class="font-semibold text-gray-800">Bob</p><p class="text-sm text-gray-500">"Hi, I need to fix a typo."</p></div></div><div class="flex space-x-2"><button class="px-4 py-1.5 text-sm font-semibold text-gray-600 bg-gray-200 rounded-lg hover:bg-gray-300">Deny</button><button class="px-4 py-1.5 text-sm font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700">Approve</button></div></div></div>
+                        <div class="permission-radio space-y-3"><div class="option"><input type="radio" id="viewer-1" name="permission-1" checked><label for="viewer-1"><span class="font-semibold text-gray-800">Viewer</span><p class="text-sm text-gray-500">Can only view.</p></label></div><div class="option"><input type="radio" id="commenter-1" name="permission-1"><label for="commenter-1"><span class="font-semibold text-gray-800">Commenter</span><p class="text-sm text-gray-500">Can view and comment.</p></label></div><div class="option"><input type="radio" id="editor-1" name="permission-1"><label for="editor-1"><span class="font-semibold text-gray-800">Editor</span><p class="text-sm text-gray-500">Can view, comment and edit.</p></label></div></div>
+                        <div class="bg-white p-4 rounded-xl space-y-4 shadow-sm"><h3 class="text-md font-semibold text-gray-800">Advanced Settings</h3><div class="space-y-4">
+                            <div class="flex justify-between items-center"><span class="text-gray-700 text-sm">Link Expiration</span><select class="text-sm rounded-lg border-gray-300 focus:ring-blue-500 focus:border-blue-500 py-2 pl-3 pr-8 bg-gray-50"><option selected>30 days</option><option>7 days</option><option>Permanent 👑</option><option>Custom 👑</option></select></div>
+                            <div class="flex justify-between items-center text-sm"><span class="text-gray-700">Allow download, print, save, copy</span><div class="relative inline-block w-10 mr-2 align-middle select-none"><input type="checkbox" id="toggle-download-1" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer" checked/><label for="toggle-download-1" class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label></div></div><div class="flex justify-between items-center text-sm"><span class="text-gray-700">Allow requests to edit</span><div class="relative inline-block w-10 mr-2 align-middle select-none"><input type="checkbox" id="toggle-request-1" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer" checked/><label for="toggle-request-1" class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label></div></div></div></div>
+                    </div>
+                    <div class="tab-content space-y-4"><div class="bg-white p-4 rounded-xl shadow-sm space-y-3"><h3 class="text-md font-semibold text-gray-800">Collaborators</h3><input type="email" placeholder="Add people by email" class="w-full px-3 py-2.5 text-sm rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"><div class="pt-2 space-y-3"><div class="flex items-center justify-between"><div class="flex items-center space-x-3"><img src="https://placehold.co/40x40/7c3aed/ffffff?text=A" alt="Avatar" class="w-10 h-10 rounded-full"><div><p class="font-semibold text-gray-800">Alice</p><p class="text-sm text-gray-500">alice@example.com</p></div></div><select class="text-sm rounded-lg border-gray-300 focus:ring-blue-500 focus:border-blue-500"><option>Editor</option><option>Commenter</option><option selected>Viewer</option></select></div></div></div></div>
+                </main>
+                <footer class="flex-shrink-0 p-4 bg-white border-t border-gray-200"><button onclick="copyLink(this)" class="w-full py-3 text-lg font-semibold text-white bg-blue-600 rounded-xl hover:bg-blue-700 flex items-center justify-center space-x-2"><span>Copy Link</span></button></footer>
+            </div>
+
+            <div id="demo-content-2" class="demo-content flex flex-col flex-grow h-full">
+                <!-- Header (same) -->
+                <header class="flex-shrink-0 bg-white shadow-sm flex items-center justify-between p-4 h-16"><button class="text-gray-600"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" /></svg></button><h1 class="text-lg font-bold text-gray-800">Share Settings</h1><div class="relative"><button class="text-gray-600"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg></button></div></header>
+                <main class="flex-grow overflow-y-auto p-4 space-y-5">
+                    <div><h2 class="text-sm font-semibold text-gray-500 uppercase mb-3">Link Permissions</h2><div class="bg-white p-1.5 rounded-xl flex space-x-2 shadow-sm"><button onclick="changeMainTab(this, 0)" class="main-tab-button active w-1/2 text-center font-semibold py-2 rounded-lg">Everyone with the link</button><button onclick="changeMainTab(this, 1)" class="main-tab-button w-1/2 text-center font-semibold py-2 rounded-lg">Specific people</button></div></div>
+                    <div class="tab-content active space-y-6">
+                        <!-- UPDATED: Individual Access Card with Info Icon -->
+                        <div class="bg-white p-4 rounded-xl shadow-sm space-y-3">
+                            <div class="relative flex items-center justify-between">
+                                <div class="flex items-center space-x-2">
+                                    <h3 class="text-md font-semibold text-gray-800">Individual Access</h3>
+                                    <button id="info-toggle-button" onclick="toggleInfoPopover()" class="text-gray-400 hover:text-gray-600">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                                        </svg>
+                                    </button>
+                                </div>
+                                <!-- Popover -->
+                                <div id="info-popover" class="hidden absolute z-10 w-60 p-3 bottom-full mb-2 left-0 bg-gray-700 text-white text-xs rounded-lg shadow-xl">
+                                    仅针对当前链接生效的特殊权限。如需设置指定协作者，请前往‘Specific people’。
+                                    <svg class="absolute text-gray-700 h-2 w-full left-0 top-full" x="0px" y="0px" viewBox="0 0 255 255" xml:space="preserve"><polygon class="fill-current" points="0,0 127.5,127.5 255,0"/></svg>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between"><div class="flex items-center space-x-3"><img src="https://placehold.co/40x40/34d399/ffffff?text=B" alt="Avatar" class="w-10 h-10 rounded-full"><div><p class="font-semibold text-gray-800">Bob</p><p class="text-sm text-gray-500">bob@example.com</p></div></div><select class="text-sm rounded-lg border-gray-300 focus:ring-blue-500 focus:border-blue-500"><option selected>Editor</option><option>Commenter</option><option>Viewer</option></select></div>
+                        </div>
+                        <div class="permission-radio space-y-3"><div class="option"><input type="radio" id="viewer-2" name="permission-2" checked><label for="viewer-2"><span class="font-semibold text-gray-800">Viewer</span><p class="text-sm text-gray-500">Can only view.</p></label></div><div class="option"><input type="radio" id="commenter-2" name="permission-2"><label for="commenter-2"><span class="font-semibold text-gray-800">Commenter</span><p class="text-sm text-gray-500">Can view and comment.</p></label></div><div class="option"><input type="radio" id="editor-2" name="permission-2"><label for="editor-2"><span class="font-semibold text-gray-800">Editor</span><p class="text-sm text-gray-500">Can view, comment and edit.</p></label></div></div>
+                        <div class="bg-white p-4 rounded-xl space-y-4 shadow-sm"><h3 class="text-md font-semibold text-gray-800">Advanced Settings</h3><div class="space-y-4">
+                            <div class="flex justify-between items-center"><span class="text-gray-700 text-sm">Link Expiration</span><select class="text-sm rounded-lg border-gray-300 focus:ring-blue-500 focus:border-blue-500 py-2 pl-3 pr-8 bg-gray-50"><option selected>30 days</option><option>7 days</option><option>Permanent 👑</option><option>Custom 👑</option></select></div>
+                            <div class="flex justify-between items-center text-sm"><span class="text-gray-700">Allow download, print, save, copy</span><div class="relative inline-block w-10 mr-2 align-middle select-none"><input type="checkbox" id="toggle-download-2" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer" checked/><label for="toggle-download-2" class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label></div></div><div class="flex justify-between items-center text-sm"><span class="text-gray-700">Allow requests to edit</span><div class="relative inline-block w-10 mr-2 align-middle select-none"><input type="checkbox" id="toggle-request-2" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer" checked/><label for="toggle-request-2" class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label></div></div></div></div>
+                    </div>
+                     <div class="tab-content space-y-4"><div class="bg-white p-4 rounded-xl shadow-sm space-y-3"><h3 class="text-md font-semibold text-gray-800">Collaborators</h3><input type="email" placeholder="Add people by email" class="w-full px-3 py-2.5 text-sm rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"><div class="pt-2 space-y-3"><div class="flex items-center justify-between"><div class="flex items-center space-x-3"><img src="https://placehold.co/40x40/7c3aed/ffffff?text=A" alt="Avatar" class="w-10 h-10 rounded-full"><div><p class="font-semibold text-gray-800">Alice</p><p class="text-sm text-gray-500">alice@example.com</p></div></div><select class="text-sm rounded-lg border-gray-300 focus:ring-blue-500 focus:border-blue-500"><option>Editor</option><option>Commenter</option><option selected>Viewer</option></select></div></div></div></div>
+                </main>
+                <footer class="flex-shrink-0 p-4 bg-white border-t border-gray-200"><button onclick="copyLink(this)" class="w-full py-3 text-lg font-semibold text-white bg-blue-600 rounded-xl hover:bg-blue-700 flex items-center justify-center space-x-2"><span>Copy Link</span></button></footer>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const demoTabs = document.querySelectorAll('.demo-tab-button');
+        const demoContents = document.querySelectorAll('.demo-content');
+
+        function changeDemoTab(index) {
+            demoTabs.forEach((tab, i) => tab.classList.toggle('active', i === index));
+            demoContents.forEach((content, i) => {
+                content.classList.toggle('active', i === index);
+                if (i === index) {
+                    content.style.display = 'flex';
+                } else {
+                    content.style.display = 'none';
+                }
+            });
+        }
+
+        function changeMainTab(button, index) {
+            const parentDemoContent = button.closest('.demo-content');
+            const mainTabs = parentDemoContent.querySelectorAll('.main-tab-button');
+            const tabContents = parentDemoContent.querySelectorAll('main > .tab-content');
+            
+            mainTabs.forEach((btn, i) => btn.classList.toggle('active', i === index));
+            tabContents.forEach((content, i) => content.classList.toggle('active', i === index));
+        }
+        
+        function copyLink(button) {
+            const originalContent = button.innerHTML;
+            button.innerHTML = `
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+                <span>Copied!</span>
+            `;
+            button.disabled = true;
+            setTimeout(() => {
+                button.innerHTML = originalContent;
+                button.disabled = false;
+            }, 2000);
+        }
+        
+        function toggleInfoPopover() {
+            const popover = document.getElementById('info-popover');
+            popover.classList.toggle('hidden');
+        }
+
+        // ADDED: Logic to close popover on outside click
+        window.addEventListener('click', function(event) {
+            const popover = document.getElementById('info-popover');
+            const toggleButton = document.getElementById('info-toggle-button');
+            
+            if (popover && !popover.classList.contains('hidden')) {
+                if (toggleButton && !toggleButton.contains(event.target) && !popover.contains(event.target)) {
+                    popover.classList.add('hidden');
+                }
+            }
+        });
+
+        // Initialize first demo tab
+        changeDemoTab(0);
+    </script>
+
+</body>
+</html>
+
+
