@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WPS OpenLibrary - MVP Demo v1.6</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Serif:wght@400;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f9fafb; /* gray-50 */
+        }
+
+        .font-serif {
+            font-family: 'Noto Serif', serif;
+        }
+
+        /* Smooth fade ins */
+        .fade-in {
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Soft Gate Gradient */
+        .soft-gate-gradient {
+            background: linear-gradient(to top, #ffffff 10%, rgba(255,255,255,0.95) 40%, rgba(255,255,255,0) 100%);
+        }
+
+        /* Simulated Browser Download Bar Animation */
+        .download-fly-animation {
+            animation: flyToTopRight 1s ease-in-out forwards;
+        }
+
+        @keyframes flyToTopRight {
+            0% { transform: scale(1) translate(0, 0); opacity: 1; }
+            100% { transform: scale(0.1) translate(40vw, -40vh); opacity: 0; }
+        }
+    </style>
+</head>
+<body class="text-gray-900 antialiased min-h-screen flex flex-col relative">
+
+    <!-- APP CONTAINER -->
+    <div id="app">
+        <!-- Content injected by JS -->
+    </div>
+
+    <!-- MODALS CONTAINER -->
+    <div id="modal-root"></div>
+
+    <!-- TOAST CONTAINER -->
+    <div id="toast-container" class="fixed top-4 right-4 z-[100] space-y-2"></div>
+
+    <script>
+        // --- 1. CONFIGURATION: 7 Core Categories (PRD v1.6) ---
+        const CATEGORIES = [
+            { id: 'exams-test-prep', label: 'Exams & Test Prep', icon: 'graduation-cap' },
+            { id: 'fiction-stories', label: 'Fiction & Stories', icon: 'book-open' },
+            { id: 'school-education', label: 'School & Education', icon: 'library' },
+            { id: 'forms-templates', label: 'Forms & Templates', icon: 'file-spreadsheet' },
+            { id: 'lifestyle-hobbies', label: 'Lifestyle & Hobbies', icon: 'coffee' },
+            { id: 'religion-spiritual', label: 'Religion & Spiritual', icon: 'moon' },
+            { id: 'resumes-cvs', label: 'Resumes & CVs', icon: 'user-check' }
+        ];
+
+        // --- 2. MOCK DATA ---
+        const MOCK_DOCS = [
+            {
+                id: 1,
+                title: "Soal CPNS SKD 2025 - Tes Wawasan Kebangsaan (TWK) Full",
+                type: "pdf", 
+                category: "exams-test-prep", 
+                subCategory: "Civil Service",
+                author: "BKN Official (Repost)",
+                views: "125K",
+                date: "2025-01-15",
+                pages: 20,
+                description: "Complete simulation paper for Indonesia CPNS 2025. Includes TWK, TIU, and TKP sections. Essential for government job applicants.",
+                tags: ["CPNS 2025", "TWK", "Indonesia"],
+                content: [
+                    { page: 1, text: "SIMULASI CAT BKN 2025\n\nTES WAWASAN KEBANGSAAN (TWK)\n\n1. Pancasila sebagai ideologi terbuka mengandung nilai-nilai yang bersifat tetap dan tidak berubah..." },
+                    { page: 2, text: "2. Hubungan antara pemerintah pusat dan daerah dalam negara kesatuan Republik Indonesia menganut asas..." },
+                    { page: 3, text: "3. UUD 1945 alinea pertama mengandung makna dalil objektif, yaitu..." },
+                    { page: 4, text: "(PREVIEW LOCKED) Download to view full 20 pages and answer keys." }
+                ]
+            },
+            {
+                id: 2,
+                title: "BIR Form 2316 - Certificate of Compensation Payment (Auto-Calc)",
+                type: "xlsx",
+                category: "forms-templates", 
+                subCategory: "Tax & Finance",
+                author: "Finance Dept PH",
+                views: "89K",
+                date: "2025-01-10",
+                pages: 3,
+                description: "Automated Excel template for Philippines BIR Form 2316. Built-in formulas for tax withheld calculation.",
+                tags: ["BIR Form", "Philippines", "Tax", "Excel"],
+                content: [
+                    { page: 1, text: "BIR FORM 2316 (EXCEL VIEW)\n\n[Row 1] Part I - Employee Information\n[Row 10] Gross Compensation: ₱ 450,000.00\n[Row 12] Taxable Income: ₱ 360,000.00" },
+                    { page: 2, text: "CALCULATION SHEET (HIDDEN FORMULAS)\n\n=IF(D10>250000, (D10-250000)*0.2, 0)\n\nNOTE: Download to enable macros." },
+                    { page: 3, text: "INSTRUCTIONS\n1. Enable Editing\n2. Fill yellow cells only." }
+                ]
+            },
+            {
+                id: 3,
+                title: "The Silent Stars (Fan Fiction) - Chapter 1-5",
+                type: "pdf",
+                category: "fiction-stories", 
+                subCategory: "Sci-Fi",
+                author: "WattpadStar22",
+                views: "45K",
+                date: "2025-01-05",
+                pages: 50,
+                description: "A fan fiction based on the popular series. Follows the journey of the lost fleet commander.",
+                tags: ["Fanfic", "Novel", "Sci-Fi"],
+                content: [
+                    { page: 1, text: "CHAPTER 1: THE AWAKENING\nThe cold steel of the cryo-pod felt like burning ice against his skin..." },
+                    { page: 2, text: "He stumbled out, the alarms blaring in the distance. 'Computer, status report!'" },
+                    { page: 3, text: "The ship was silent. Too silent. The stars outside the viewport were wrong." },
+                    { page: 4, text: "(PREVIEW ENDS) Unlock the full 50 pages to continue reading..." }
+                ]
+            },
+            {
+                id: 4,
+                title: "Senior Product Manager Resume Template - SaaS Focus",
+                type: "docx",
+                category: "resumes-cvs",
+                subCategory: "Product Management",
+                author: "Ron Chen",
+                views: "210K",
+                date: "2024-12-20",
+                pages: 2,
+                description: "A comprehensive resume template optimized for ATS systems.",
+                tags: ["Resume", "CV", "SaaS"],
+                content: [
+                    { page: 1, text: "RON CHEN\nProduct Manager | User Growth Specialist\n\nSUMMARY\nResults-oriented Product Manager with 5+ years of experience..." },
+                    { page: 2, text: "SKILLS\nData Analysis, SQL, Python\n\nEDUCATION\nMBA, Tech University" }
+                ]
+            }
+        ];
+
+        // --- STATE MANAGEMENT ---
+        const state = {
+            view: 'home', 
+            currentDocId: null,
+            isLoggedIn: false,
+            showInstallModal: false, // Updated from showDownloadModal
+            showReportModal: false,
+            downloadingDocTitle: ''
+        };
+
+        // --- COMPONENTS ---
+
+        function renderHeader() {
+            return `
+            <header class="sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+                    <div class="flex items-center cursor-pointer" onclick="navigateTo('home')">
+                        <div class="w-8 h-8 bg-blue-600 rounded flex items-center justify-center mr-2">
+                            <span class="text-white font-bold text-xl">W</span>
+                        </div>
+                        <span class="text-xl font-bold text-gray-800 tracking-tight">WPS <span class="text-blue-600">OpenLibrary</span></span>
+                    </div>
+                    <div class="hidden md:flex flex-1 max-w-2xl mx-8 relative">
+                        <input type="text" placeholder="Search: Exams, Resumes, Forms..." 
+                            class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50 text-sm">
+                        <i data-lucide="search" class="w-4 h-4 text-gray-400 absolute left-3 top-3"></i>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        ${state.isLoggedIn ? `
+                            <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 font-bold text-sm cursor-pointer" onclick="toggleLogin()">RC</div>
+                        ` : `
+                            <button onclick="toggleLogin()" class="text-gray-700 hover:text-blue-600 font-medium text-sm">Log in</button>
+                            <button onclick="toggleLogin()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium">Sign up</button>
+                        `}
+                    </div>
+                </div>
+            </header>
+            `;
+        }
+
+        function renderHome() {
+            return `
+            <div class="bg-gray-50 min-h-screen pb-20 fade-in">
+                <div class="bg-white border-b border-gray-200 py-16 text-center px-4">
+                    <h1 class="text-4xl font-extrabold text-gray-900 mb-4">
+                        Discover <span class="text-blue-600">Millions</span> of Documents
+                    </h1>
+                    <p class="text-gray-600 text-lg mb-8 max-w-2xl mx-auto">
+                        Access exam papers, government forms, novels, and resumes shared by the community.
+                    </p>
+                    <div class="flex flex-wrap justify-center gap-3 mt-8 max-w-5xl mx-auto">
+                        ${CATEGORIES.map(cat => `
+                            <button class="flex items-center gap-2 px-4 py-2 rounded-full border border-gray-300 bg-white text-gray-700 text-sm font-medium hover:border-blue-500 hover:text-blue-600 transition-all shadow-sm">
+                                <i data-lucide="${cat.icon}" class="w-4 h-4"></i> ${cat.label}
+                            </button>
+                        `).join('')}
+                    </div>
+                </div>
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-2xl font-bold text-gray-800 flex items-center">
+                            <i data-lucide="trending-up" class="w-6 h-6 text-blue-600 mr-2"></i> Trending This Week
+                        </h2>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        ${MOCK_DOCS.map(doc => {
+                            const catLabel = CATEGORIES.find(c => c.id === doc.category)?.label || doc.category;
+                            return `
+                            <div onclick="navigateTo('detail', ${doc.id})" class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow cursor-pointer group flex flex-col h-full">
+                                <div class="h-40 bg-gray-100 relative flex justify-center items-start pt-6 overflow-hidden flex-shrink-0">
+                                    <div class="w-28 h-36 bg-white shadow-lg border border-gray-200 text-[4px] text-gray-300 p-2 overflow-hidden transform group-hover:scale-105 transition-transform duration-300 select-none">
+                                        <div class="h-1 bg-gray-800 mb-2 rounded w-3/4"></div>
+                                        ${[...Array(10)].map(() => `<div class="h-1 bg-gray-200 mb-1 rounded w-full"></div>`).join('')}
+                                    </div>
+                                    <div class="absolute top-2 right-2 bg-white/90 backdrop-blur px-2 py-0.5 rounded text-[10px] font-bold text-gray-600 uppercase border border-gray-200 shadow-sm">${doc.type}</div>
+                                </div>
+                                <div class="p-4 flex-1 flex flex-col">
+                                    <p class="text-[10px] font-bold text-blue-600 uppercase tracking-wider mb-1 truncate">${catLabel}</p>
+                                    <h3 class="font-bold text-gray-900 leading-tight mb-2 group-hover:text-blue-600 transition-colors line-clamp-2 text-sm">${doc.title}</h3>
+                                    <div class="mt-auto flex items-center text-gray-500 text-xs pt-3 border-t border-gray-100 justify-between">
+                                        <span class="flex items-center truncate max-w-[60%]"><i data-lucide="user" class="w-3 h-3 mr-1"></i> ${doc.author}</span>
+                                        <span class="flex items-center"><i data-lucide="eye" class="w-3 h-3 mr-1"></i> ${doc.views}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        `}).join('')}
+                    </div>
+                </div>
+            </div>
+            `;
+        }
+
+        function renderDetail() {
+            const doc = MOCK_DOCS.find(d => d.id === state.currentDocId);
+            if (!doc) return `<div>Error: Doc not found</div>`;
+
+            const catLabel = CATEGORIES.find(c => c.id === doc.category)?.label || doc.category;
+            
+            // Icon Logic
+            let iconColor = 'text-gray-500', iconName = 'file-text';
+            if(doc.type === 'pdf') { iconColor = 'text-red-500'; iconName = 'file-text'; }
+            if(doc.type === 'xlsx') { iconColor = 'text-green-600'; iconName = 'file-spreadsheet'; }
+            if(doc.type === 'docx') { iconColor = 'text-blue-600'; iconName = 'file-type-2'; }
+
+            // Hard Gate Text Strategy (PRD v1.6)
+            let ctaMain = "Download to Edit", ctaSub = "Fully compatible formatting";
+            if (doc.category === 'forms-templates') { ctaMain = "Download to Calculate"; ctaSub = "Enable auto-formulas in Excel"; } 
+            else if (doc.category === 'exams-test-prep') { ctaMain = "Download to Annotate"; ctaSub = "Highlight & Take Notes"; }
+            else if (doc.category === 'fiction-stories') { ctaMain = "Read in Eye-Care Mode"; ctaSub = "Download App for Best Experience"; }
+
+            return `
+            <div class="bg-gray-100 min-h-screen pb-20 fade-in">
+                <div class="bg-white border-b border-gray-200">
+                    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+                        <nav class="flex text-sm text-gray-500 items-center overflow-x-auto whitespace-nowrap">
+                            <a href="#" onclick="navigateTo('home')" class="hover:text-blue-600">Home</a>
+                            <i data-lucide="chevron-right" class="w-4 h-4 mx-2"></i>
+                            <span class="hover:text-blue-600 cursor-pointer">${catLabel}</span>
+                            <i data-lucide="chevron-right" class="w-4 h-4 mx-2"></i>
+                            <span class="text-gray-900 font-medium truncate">${doc.title}</span>
+                        </nav>
+                    </div>
+                </div>
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                    <div class="flex flex-col lg:flex-row gap-8">
+                        <!-- LEFT CONTENT -->
+                        <div class="lg:w-3/4">
+                            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 mb-6">
+                                <div class="flex items-start">
+                                    <div class="p-3 bg-blue-50 rounded-lg mr-4 flex-shrink-0">
+                                        <i data-lucide="${iconName}" class="w-8 h-8 ${iconColor}"></i>
+                                    </div>
+                                    <div>
+                                        <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-2 leading-tight">${doc.title}</h1>
+                                        <div class="flex flex-wrap items-center text-sm text-gray-500 gap-4">
+                                            <span class="flex items-center"><i data-lucide="user" class="w-4 h-4 mr-1"></i> ${doc.author}</span>
+                                            <span class="flex items-center"><i data-lucide="calendar" class="w-4 h-4 mr-1"></i> ${doc.date}</span>
+                                            <span class="flex items-center"><i data-lucide="eye" class="w-4 h-4 mr-1"></i> ${doc.views}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <p class="mt-4 text-gray-600 leading-relaxed text-sm sm:text-base">${doc.description}</p>
+                                <!-- Web Toolbar -->
+                                <div class="mt-6 flex flex-wrap items-center justify-between border-t border-gray-100 pt-5 gap-4">
+                                    <div class="flex gap-3">
+                                        <button onclick="triggerDirectInstall('${doc.title}')" class="flex items-center px-4 py-2.5 text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-sm transition-all transform hover:scale-[1.02]">
+                                            <i data-lucide="edit-3" class="w-4 h-4 mr-2"></i> Edit in WPS
+                                        </button>
+                                        <button onclick="triggerDirectInstall('${doc.title}')" class="flex items-center px-4 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 hover:bg-gray-50 rounded-lg shadow-sm">
+                                            <i data-lucide="download" class="w-4 h-4 mr-2"></i> Save As...
+                                        </button>
+                                    </div>
+                                    <div class="text-xs font-medium text-orange-600 flex items-center bg-orange-50 px-3 py-1.5 rounded-full border border-orange-100">
+                                        <i data-lucide="lock" class="w-3 h-3 mr-1.5"></i> View Only Mode
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- PREVIEW -->
+                            <div class="space-y-6 relative">
+                                ${doc.content.map((page, index) => {
+                                    if (!state.isLoggedIn && index > 2) return ''; 
+                                    return `
+                                    <div class="bg-white shadow-sm border border-gray-200 w-full aspect-[210/297] relative mx-auto p-8 sm:p-12 overflow-hidden">
+                                        <div class="absolute top-6 left-12 right-12 h-4 border-b border-gray-100 flex justify-between text-[10px] text-gray-300 uppercase tracking-widest">
+                                            <span>${doc.title.substring(0, 30)}...</span><span>Page ${page.page}</span>
+                                        </div>
+                                        <div class="mt-4 text-gray-800 font-serif whitespace-pre-wrap leading-relaxed text-sm sm:text-base">
+                                            ${page.text}
+                                            <p class="mt-6 text-gray-300 select-none text-justify">Lorem ipsum dolor sit amet, consectetur adipiscing elit...</p>
+                                        </div>
+                                    </div>`;
+                                }).join('')}
+                                ${!state.isLoggedIn ? `
+                                <div class="absolute bottom-0 left-0 w-full h-[600px] soft-gate-gradient flex flex-col items-center justify-end pb-20 z-10">
+                                    <div class="bg-white p-8 rounded-2xl shadow-xl text-center max-w-md border border-gray-200 mx-4">
+                                        <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4"><i data-lucide="unlock" class="w-6 h-6"></i></div>
+                                        <h3 class="text-xl font-bold text-gray-900 mb-2">Continue Reading for Free</h3>
+                                        <button onclick="toggleLogin()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition-colors mb-3">Read Full Document</button>
+                                    </div>
+                                </div>` : `<div class="bg-white shadow-sm border border-gray-200 w-full p-12 text-center py-24"><p class="text-gray-400 italic">...Remaining pages loaded...</p></div>`}
+                            </div>
+                            <!-- Footer Compliance -->
+                            <div class="border-t border-gray-200 py-6 flex justify-between items-center text-xs text-gray-500 mt-6">
+                                <span>ID: ${doc.id}-${Math.random().toString(36).substr(2, 9)}</span>
+                                <button onclick="openReportModal()" class="flex items-center hover:text-red-600 transition-colors"><i data-lucide="flag" class="w-3 h-3 mr-1"></i> Report / Copyright</button>
+                            </div>
+                        </div>
+                        <!-- RIGHT SIDEBAR (Sticky) -->
+                        <div class="lg:w-1/4 space-y-6">
+                            <!-- Direct Install Card -->
+                            <div class="bg-white rounded-xl shadow-lg border border-blue-100 overflow-hidden sticky top-24">
+                                <div class="bg-blue-600 p-4 text-white">
+                                    <h3 class="font-bold flex items-center text-sm sm:text-base"><i data-lucide="download" class="w-5 h-5 mr-2"></i> Get Full Access</h3>
+                                </div>
+                                <div class="p-5">
+                                    <p class="text-sm text-gray-600 mb-4">This file contains advanced formatting that works best in the app.</p>
+                                    <ul class="text-xs text-gray-500 space-y-2 mb-6">
+                                        <li class="flex items-center"><span class="text-green-500 mr-2">✓</span> ${doc.type === 'xlsx' ? 'Edit formulas & macros' : 'Preserve complex layout'}</li>
+                                        <li class="flex items-center"><span class="text-green-500 mr-2">✓</span> No ads or watermarks</li>
+                                    </ul>
+                                    <button onclick="triggerDirectInstall('${doc.title}')" class="w-full bg-blue-50 text-blue-700 hover:bg-blue-100 font-bold py-3 px-4 rounded-lg border border-blue-200 transition-colors flex flex-col items-center justify-center text-center group">
+                                        <span class="text-sm">${ctaMain}</span>
+                                        <span class="text-[10px] font-normal opacity-75 group-hover:opacity-100">${ctaSub}</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            `;
+        }
+
+        // --- NEW MODAL: INSTALL GUIDE (Direct Install) ---
+        function renderModals() {
+            let html = '';
+
+            // 1. INSTALL GUIDE MODAL (Replaces old Download Modal)
+            if (state.showInstallModal) {
+                html += `
+                <div class="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm fade-in">
+                    <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full p-0 relative overflow-hidden">
+                        <button onclick="closeModals()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 z-10">
+                            <i data-lucide="x" class="w-5 h-5"></i>
+                        </button>
+                        
+                        <div class="bg-gray-50 p-6 border-b border-gray-200 text-center">
+                            <div class="w-12 h-12 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-3 animate-bounce">
+                                <i data-lucide="download-cloud" class="w-6 h-6"></i>
+                            </div>
+                            <h2 class="text-xl font-bold text-gray-900">Download Started...</h2>
+                            <p class="text-sm text-gray-600 mt-1">Just one step to edit <b>${state.downloadingDocTitle}</b>.</p>
+                        </div>
+
+                        <div class="p-8">
+                            <!-- Instruction Steps -->
+                            <div class="space-y-6">
+                                <div class="flex gap-4 items-start">
+                                    <div class="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center flex-shrink-0 font-bold">1</div>
+                                    <div>
+                                        <h4 class="font-bold text-gray-900">Click the file in your browser</h4>
+                                        <p class="text-sm text-gray-500">Look for the download bar at the top-right or bottom-left of your browser.</p>
+                                    </div>
+                                </div>
+                                <div class="flex gap-4 items-start">
+                                    <div class="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center flex-shrink-0 font-bold">2</div>
+                                    <div>
+                                        <h4 class="font-bold text-gray-900">Install WPS Office</h4>
+                                        <p class="text-sm text-gray-500">The document will <b>open automatically</b> after installation.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Mock Visual of Browser Corner -->
+                            <div class="mt-8 bg-gray-100 rounded-lg p-4 border border-gray-200 relative">
+                                <div class="absolute -top-3 right-6">
+                                    <i data-lucide="arrow-up" class="w-6 h-6 text-red-500 animate-bounce"></i>
+                                </div>
+                                <div class="flex items-center bg-white rounded shadow-sm p-2 gap-3">
+                                    <div class="w-8 h-8 bg-red-100 rounded flex items-center justify-center text-red-500"><i data-lucide="file-text" class="w-4 h-4"></i></div>
+                                    <div class="flex-1">
+                                        <div class="h-2 bg-gray-200 rounded w-3/4 mb-1"></div>
+                                        <div class="h-2 bg-blue-500 rounded w-1/2"></div>
+                                    </div>
+                                </div>
+                                <p class="text-xs text-center text-gray-400 mt-2">Browser Download Bar</p>
+                            </div>
+
+                            <div class="mt-6 text-center">
+                                <a href="#" class="text-sm text-blue-600 hover:underline">Download didn't start? Try again</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                `;
+            }
+
+            // 2. REPORT MODAL (Compliance Scheme B)
+            if (state.showReportModal) {
+                html += `
+                <div class="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm fade-in">
+                    <div class="bg-white rounded-xl shadow-2xl max-w-lg w-full p-6 relative">
+                        <div class="flex justify-between items-center mb-6 border-b border-gray-100 pb-4">
+                            <h3 class="text-lg font-bold text-gray-900 flex items-center gap-2">
+                                <i data-lucide="shield-alert" class="w-5 h-5 text-gray-400"></i> Report Document
+                            </h3>
+                            <button onclick="closeModals()" class="text-gray-400 hover:text-gray-600"><i data-lucide="x" class="w-5 h-5"></i></button>
+                        </div>
+                        <form onsubmit="event.preventDefault(); closeModals(); showToast('Report submitted successfully.');">
+                            <div class="space-y-4">
+                                <div><label class="block text-sm font-medium text-gray-700 mb-1">Reason</label><select class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"><option>Copyright Infringement</option><option>Spam</option></select></div>
+                                <div><label class="block text-sm font-medium text-gray-700 mb-1">Email</label><input type="email" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" required></div>
+                                <div><label class="block text-sm font-medium text-gray-700 mb-1">Details</label><textarea rows="3" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"></textarea></div>
+                            </div>
+                            <div class="mt-6 flex justify-end gap-3"><button type="button" onclick="closeModals()" class="px-4 py-2 text-sm text-gray-600 font-medium hover:bg-gray-100 rounded-lg">Cancel</button><button type="submit" class="px-6 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-bold rounded-lg shadow-sm">Submit</button></div>
+                        </form>
+                    </div>
+                </div>`;
+            }
+            return html;
+        }
+
+        // --- CORE FUNCTIONS ---
+
+        // 1. Trigger Direct Install (New Logic)
+        window.triggerDirectInstall = (docTitle) => {
+            state.downloadingDocTitle = docTitle;
+            
+            // A. Simulate Browser Download (Toast)
+            showToast(`Downloading "wps_installer_x86.exe"...`);
+            
+            // B. Open Install Guide Modal
+            state.showInstallModal = true;
+            updateUI();
+        };
+
+        window.showToast = (msg) => {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'bg-gray-800 text-white px-4 py-3 rounded-lg shadow-lg text-sm flex items-center gap-2 fade-in';
+            toast.innerHTML = `<i data-lucide="download" class="w-4 h-4"></i> ${msg}`;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 4000);
+        };
+
+        window.navigateTo = (view, docId = null) => {
+            state.view = view;
+            if (docId) state.currentDocId = docId;
+            window.scrollTo(0, 0);
+            updateUI();
+        };
+
+        window.toggleLogin = () => {
+            state.isLoggedIn = !state.isLoggedIn;
+            updateUI();
+            showToast(state.isLoggedIn ? "Logged in as Ron" : "Logged out");
+        };
+
+        window.openReportModal = () => {
+            state.showReportModal = true;
+            updateUI();
+        };
+
+        window.closeModals = () => {
+            state.showInstallModal = false;
+            state.showReportModal = false;
+            updateUI();
+        };
+
+        function updateUI() {
+            const app = document.getElementById('app');
+            const modals = document.getElementById('modal-root');
+            
+            let html = renderHeader();
+            if (state.view === 'home') html += renderHome();
+            else if (state.view === 'detail') html += renderDetail();
+            
+            // Footer
+            html += `<footer class="bg-white border-t border-gray-200 mt-auto py-8"><div class="max-w-7xl mx-auto px-4 text-center text-sm text-gray-500"><p>© 2026 WPS OpenLibrary</p></div></footer>`;
+
+            app.innerHTML = html;
+            modals.innerHTML = renderModals();
+            lucide.createIcons();
+        }
+
+        // Init
+        updateUI();
+    </script>
+</body>
+</html>
