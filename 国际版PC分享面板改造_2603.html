@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WPS PC Share Demo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f3f3f3;
+            overflow: hidden;
+        }
+        
+        /* WPS Blue */
+        :root {
+            --wps-blue: #3b82f6;
+            --wps-blue-hover: #2563eb;
+        }
+
+        /* Top Bar */
+        .wps-header-bg {
+            background-color: #f3f3f3;
+            border-bottom: 1px solid #d1d1d1;
+        }
+
+        .wps-tab-active {
+            background-color: #fff;
+            border-bottom: 2px solid var(--wps-blue);
+            color: var(--wps-blue);
+            font-weight: 600;
+        }
+
+        .doc-canvas {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        /* Cursor Animation */
+        .cursor-blink {
+            animation: blink 1s step-end infinite;
+        }
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+        
+        /* Panel Animation */
+        .panel-enter {
+            animation: slideIn 0.2s ease-out forwards;
+        }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-10px) scale(0.98); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        /* Scrollbar for panel if needed */
+        .panel-scroll::-webkit-scrollbar {
+            width: 6px;
+        }
+        .panel-scroll::-webkit-scrollbar-thumb {
+            background-color: #e5e7eb;
+            border-radius: 3px;
+        }
+
+        /* Tooltip Arrow - Pointing Up (for Move To) */
+        .tooltip-arrow-up::after {
+            content: "";
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: transparent transparent #374151 transparent;
+        }
+        
+        /* Tooltip Arrow - Pointing Down (for Manage Collaborators) */
+        .tooltip-arrow-down::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #374151 transparent transparent transparent;
+        }
+    </style>
+</head>
+<body class="h-screen flex flex-col">
+
+    <!-- 1. Window Title Bar -->
+    <div class="bg-[#4083c8] text-white text-xs flex justify-between items-center px-4 py-1.5 select-none">
+        <div class="flex items-center space-x-4">
+            <span>AutoSave <i class="fas fa-toggle-on text-white/80"></i></span>
+            <span class="font-semibold">Project_Proposal_v2.docx - WPS Office</span>
+        </div>
+        <div class="flex space-x-4">
+            <i class="fas fa-minus hover:bg-white/20 p-1 rounded"></i>
+            <i class="far fa-square hover:bg-white/20 p-1 rounded"></i>
+            <i class="fas fa-times hover:bg-red-500 p-1 rounded"></i>
+        </div>
+    </div>
+
+    <!-- 2. Ribbon Menu -->
+    <div class="wps-header-bg bg-white shadow-sm z-10">
+        <div class="flex px-2 pt-1 border-b border-gray-200 text-sm text-gray-600">
+            <div class="px-4 py-2 hover:bg-gray-100 cursor-pointer">File</div>
+            <div class="px-4 py-2 wps-tab-active cursor-pointer">Home</div>
+            <div class="px-4 py-2 hover:bg-gray-100 cursor-pointer">Insert</div>
+            <div class="px-4 py-2 hover:bg-gray-100 cursor-pointer">Page Layout</div>
+            
+            <div class="flex-grow"></div>
+            <!-- Share Button Trigger -->
+            <div class="flex items-center space-x-2 pb-1 pr-4">
+                <button id="shareBtn" class="flex items-center space-x-1 bg-[#eaf2ff] hover:bg-[#dbe9ff] text-[#3b82f6] px-4 py-1.5 rounded-md transition-colors border border-transparent hover:border-[#3b82f6]/30">
+                    <i class="fas fa-share-alt"></i>
+                    <span class="font-medium">Share</span>
+                </button>
+                <div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 relative">
+                    <img src="https://ui-avatars.com/api/?name=Ron+Ren&background=random" class="w-8 h-8 rounded-full" alt="User">
+                </div>
+            </div>
+        </div>
+
+        <!-- Toolbar Icons -->
+        <div class="flex items-center space-x-6 px-4 py-3 bg-[#f3f3f3] border-b border-gray-300 overflow-hidden">
+            <div class="flex space-x-2 text-gray-700">
+                <i class="fas fa-paste text-xl p-2 hover:bg-gray-200 rounded"></i>
+                <div class="flex flex-col text-xs">
+                    <i class="fas fa-cut p-1 hover:bg-gray-200 rounded"></i>
+                    <i class="fas fa-copy p-1 hover:bg-gray-200 rounded"></i>
+                </div>
+            </div>
+            <div class="h-8 w-px bg-gray-300"></div>
+            <div class="flex items-center space-x-2">
+                <select class="border border-gray-300 text-sm p-1 rounded bg-white w-32"><option>Calibri</option></select>
+                <select class="border border-gray-300 text-sm p-1 rounded bg-white w-16"><option>11</option></select>
+                <i class="fas fa-bold p-1.5 hover:bg-gray-200 rounded"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. Document Area -->
+    <div class="flex-grow bg-[#dadce0] flex justify-center overflow-y-auto p-8 relative" id="mainArea">
+        <div class="doc-canvas bg-white w-[800px] h-[1100px] p-12 text-gray-800 relative cursor-text">
+            <h1 class="text-3xl font-bold mb-6">Product Requirement Document</h1>
+            <p class="mb-4"><strong>Subject:</strong> Share Panel Optimization (PC)</p>
+            <p class="mb-4"><strong>Owner:</strong> Ron Ren</p>
+            <hr class="my-6 border-gray-200">
+            <h2 class="text-xl font-semibold mb-3">1. Background</h2>
+            <p class="mb-4">The current sharing flow has too many steps. We need to simplify it to increase user growth.</p>
+            <p>Click the "Share" button on the top right to see the new design.</p>
+            <span class="inline-block w-0.5 h-5 bg-black align-middle cursor-blink"></span>
+        </div>
+
+        <!-- ================= NEW SHARE PANEL STRUCTURE ================= -->
+        <div id="sharePanel" class="hidden absolute top-4 right-16 w-[380px] bg-white rounded-xl shadow-2xl border border-gray-200 panel-enter z-50 overflow-hidden flex flex-col font-sans text-sm">
+            
+            <!-- Panel Header -->
+            <div class="px-5 py-4 border-b border-gray-100 flex justify-between items-center bg-white relative">
+                <h3 class="font-bold text-gray-800 text-base">Share</h3>
+                
+                <!-- Move To Folder Icon -->
+                <div class="relative group" id="moveToContainer">
+                    <button class="text-gray-400 hover:text-blue-600 w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition" id="moveToBtn">
+                        <i class="far fa-folder-open text-base"></i>
+                    </button>
+                    
+                    <!-- Tooltip for Path -->
+                    <div class="absolute top-full right-0 mt-2 w-max max-w-[200px] px-2 py-1 bg-gray-700 text-white text-xs rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50 tooltip-arrow-up hidden group-hover:block text-center">
+                        <div class="font-semibold mb-0.5">Location</div>
+                        <div class="text-gray-300 truncate">/My Cloud/Uploaded</div>
+                        <div class="text-blue-300 text-[10px] mt-1">Click to move</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Panel Content Scrollable Area -->
+            <div class="panel-scroll overflow-y-auto max-h-[600px] bg-gray-50">
+                
+                <!-- SECTION 1: LINK SHARING (链接分享部分) -->
+                <div class="bg-white mb-2 p-5 pb-2 relative">
+                    
+                    <!-- Section Header -->
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center space-x-2">
+                            <div class="p-1.5 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-link"></i>
+                            </div>
+                            <div class="font-semibold text-gray-800 text-base">Link Sharing</div>
+                        </div>
+                    </div>
+
+                    <!-- Content Container -->
+                    <div id="collabContent" class="relative mt-2">
+                        
+                        <!-- CTA Overlay (Blind-box unlock state) -->
+                        <div id="unlockOverlay" class="absolute inset-0 z-20 flex items-center justify-center bg-white/40 backdrop-blur-[1px] rounded-lg transition-opacity duration-300">
+                            <button id="unlockBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-full shadow-lg font-medium text-sm flex items-center space-x-2 transition transform hover:scale-105">
+                                <i class="fas fa-link text-blue-200"></i>
+                                <span>Get link to share</span>
+                            </button>
+                        </div>
+
+                        <!-- Loading Overlay -->
+                        <div id="loadingOverlay" class="hidden absolute inset-0 z-10 flex-col items-center justify-center bg-white/70 backdrop-blur-[1px] rounded-lg transition-opacity duration-300">
+                            <i class="fas fa-circle-notch fa-spin text-blue-500 text-2xl mb-2"></i>
+                            <p class="text-gray-700 font-medium text-sm">Creating secure link...</p>
+                        </div>
+
+                        <!-- Tools Wrapper (Initially grayed out and disabled) -->
+                        <div id="toolsWrapper" class="opacity-40 grayscale pointer-events-none transition-all duration-300">
+                            
+                            <!-- 1.1 Link & Social -->
+                            <div class="bg-gray-50 rounded-lg p-3 border border-gray-100 mb-4">
+                                <!-- Permission Settings Row -->
+                                <div class="flex items-center justify-between mb-2 pb-2 border-b border-gray-200 relative">
+                                    
+                                    <!-- Left: Audience Dropdown -->
+                                    <div class="relative">
+                                        <div id="audienceSelector" class="flex items-center space-x-1 text-gray-600 cursor-pointer hover:text-gray-900 group">
+                                            <i class="fas fa-globe-americas text-xs group-hover:text-blue-600 transition-colors"></i>
+                                            <span class="font-medium group-hover:text-blue-600 transition-colors">Anyone with the link</span>
+                                            <i class="fas fa-chevron-down text-[10px] group-hover:text-blue-600 transition-colors"></i>
+                                        </div>
+                                        
+                                        <!-- Mock Dropdown Menu (Includes Stop Sharing) -->
+                                        <div id="audienceMenu" class="hidden absolute top-full left-0 mt-1 w-48 bg-white rounded shadow-xl border border-gray-100 z-50 py-1 text-xs text-gray-700">
+                                            <div class="px-3 py-2 hover:bg-gray-50 cursor-pointer flex items-center" onclick="showToast('Changed to: Anyone with the link')"><i class="fas fa-globe-americas w-5 text-gray-400"></i> Anyone with the link</div>
+                                            <div class="px-3 py-2 hover:bg-gray-50 cursor-pointer flex items-center" onclick="showToast('Changed to: Only invited people')"><i class="fas fa-lock w-5 text-gray-400"></i> Only invited people</div>
+                                            <div class="border-t border-gray-100 my-1"></div>
+                                            <div id="stopSharingBtn" class="px-3 py-2 hover:bg-red-50 text-red-600 cursor-pointer flex items-center font-medium"><i class="fas fa-ban w-5 text-red-400"></i> Stop Sharing</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Right: Permission + Advanced Settings -->
+                                    <div class="flex items-center space-x-2">
+                                        <!-- Permission Dropdown -->
+                                        <div class="text-gray-500 text-xs cursor-pointer hover:text-blue-600 flex items-center space-x-1" onclick="showToast('Permission settings...')">
+                                            <span>Can View</span>
+                                            <i class="fas fa-chevron-down text-[10px]"></i>
+                                        </div>
+                                        <!-- Vertical Separator -->
+                                        <div class="h-3 w-px bg-gray-300"></div>
+                                        <!-- Advanced Settings Icon -->
+                                        <div class="text-gray-400 hover:text-gray-700 cursor-pointer p-1 rounded-full hover:bg-gray-200 transition" title="Advanced Settings (Watermark, Password, Validity)" onclick="showToast('Advanced Settings...')">
+                                            <i class="fas fa-cog text-xs"></i>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Link Copy -->
+                                <div class="flex items-center space-x-2 mb-3">
+                                    <div class="flex-grow bg-white border border-gray-200 rounded px-2 py-1.5 text-gray-500 truncate select-all text-xs cursor-text">
+                                        https://kdocs.cn/l/cs8XyZ9...
+                                    </div>
+                                    <button id="copyBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded text-xs font-medium transition flex-shrink-0 w-20 text-center">
+                                        Copy Link
+                                    </button>
+                                </div>
+
+                                <!-- Social Media Shortcuts -->
+                                <div class="flex justify-between px-1">
+                                    <button class="w-8 h-8 rounded-full bg-green-100 text-green-600 hover:bg-green-200 flex items-center justify-center transition" onclick="showToast('Share to WhatsApp')"><i class="fab fa-whatsapp"></i></button>
+                                    <button class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 hover:bg-blue-200 flex items-center justify-center transition" onclick="showToast('Share to Messenger')"><i class="fab fa-facebook-messenger"></i></button>
+                                    <button class="w-8 h-8 rounded-full bg-red-100 text-red-600 hover:bg-red-200 flex items-center justify-center transition" onclick="showToast('Share via Email')"><i class="far fa-envelope"></i></button>
+                                    <button class="w-8 h-8 rounded-full bg-sky-100 text-sky-600 hover:bg-sky-200 flex items-center justify-center transition" onclick="showToast('Share to Telegram')"><i class="fab fa-telegram-plane"></i></button>
+                                    <button class="w-8 h-8 rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200 flex items-center justify-center transition" onclick="showToast('Show QR Code')"><i class="fas fa-qrcode"></i></button>
+                                </div>
+                            </div>
+
+                            <!-- 1.2 Collaborators (Compact & Split Zones) -->
+                            <div class="flex items-center justify-between p-1 bg-gray-50 border border-gray-100 rounded-lg">
+                                
+                                <!-- Left Zone: Manage Access (Hover triggers instant tooltip) -->
+                                <div class="relative flex items-center space-x-3 hover:bg-gray-200/60 p-1.5 rounded group flex-grow cursor-pointer" onclick="showToast('Opening Manage Dialog...')">
+                                    
+                                    <!-- Instant Tooltip -->
+                                    <div class="absolute bottom-full left-1/4 mb-2 w-max px-2 py-1 bg-gray-700 text-white text-[10px] rounded shadow-lg opacity-0 group-hover:opacity-100 pointer-events-none z-50 tooltip-arrow-down hidden group-hover:block transition-none">
+                                        Manage collaborators
+                                    </div>
+
+                                    <!-- Avatar Stack -->
+                                    <div class="flex -space-x-2">
+                                        <img class="inline-block h-7 w-7 rounded-full ring-2 ring-gray-50 object-cover" src="https://ui-avatars.com/api/?name=Ron+Ren&background=0D8ABC&color=fff" alt="Ron">
+                                        <img class="inline-block h-7 w-7 rounded-full ring-2 ring-gray-50 object-cover" src="https://ui-avatars.com/api/?name=A+B&background=F59E0B&color=fff" alt="User">
+                                        <div class="inline-flex items-center justify-center h-7 w-7 rounded-full ring-2 ring-gray-50 bg-gray-200 text-[10px] font-medium text-gray-600 group-hover:bg-gray-300 transition-none">+1</div>
+                                    </div>
+                                    
+                                    <!-- Text Info -->
+                                    <div class="flex flex-col">
+                                        <span class="text-xs font-medium text-gray-700 group-hover:text-blue-600 transition-none">3 Collaborators</span>
+                                        <span class="text-[9px] text-gray-400 group-hover:text-blue-400 transition-none">Manage access</span>
+                                    </div>
+                                </div>
+                                
+                                <!-- Right Zone: Invite Button -->
+                                <button class="ml-2 text-xs bg-white border border-gray-200 hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 text-gray-700 px-3 py-1.5 rounded shadow-sm font-medium transition flex items-center space-x-1 flex-shrink-0" onclick="showToast('Opening Invite Dialog...')">
+                                    <i class="fas fa-user-plus text-[10px]"></i>
+                                    <span>Invite</span>
+                                </button>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SECTION 2: EXPORT & SEND (导出与发送部分) -->
+                <div class="bg-white p-5 pt-3">
+                    <div class="flex items-center space-x-2 mb-3">
+                        <div class="p-1.5 bg-purple-100 text-purple-600 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-paper-plane"></i>
+                        </div>
+                        <div class="font-semibold text-gray-800 text-base">Export & Send</div>
+                    </div>
+
+                    <!-- Grid layout for flat tiles -->
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="flex items-center p-2.5 border border-gray-100 rounded-lg hover:border-blue-300 hover:bg-blue-50 cursor-pointer transition group shadow-sm bg-gray-50/50" onclick="showToast('Sending file...')">
+                            <i class="fas fa-file-word text-blue-600 text-xl mr-2.5 group-hover:scale-110 transition-transform"></i>
+                            <div class="flex flex-col">
+                                <span class="text-xs font-medium text-gray-700 group-hover:text-blue-700">Send file</span>
+                                <span class="text-[9px] text-gray-400">.docx format</span>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center p-2.5 border border-gray-100 rounded-lg hover:border-red-300 hover:bg-red-50 cursor-pointer transition group shadow-sm bg-gray-50/50" onclick="showToast('Exporting to PDF...')">
+                            <i class="fas fa-file-pdf text-red-500 text-xl mr-2.5 group-hover:scale-110 transition-transform"></i>
+                            <div class="flex flex-col">
+                                <span class="text-xs font-medium text-gray-700 group-hover:text-red-700">Export PDF</span>
+                                <span class="text-[9px] text-gray-400">Best for view</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-10 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-6 py-3 rounded-full shadow-lg opacity-0 transition-opacity duration-300 pointer-events-none z-50 flex items-center space-x-2 font-sans text-sm">
+        <i class="fas fa-check-circle text-green-400"></i>
+        <span id="toastMsg">Link copied</span>
+    </div>
+
+    <script>
+        // DOM Elements
+        const shareBtn = document.getElementById('shareBtn');
+        const sharePanel = document.getElementById('sharePanel');
+        
+        const unlockOverlay = document.getElementById('unlockOverlay');
+        const unlockBtn = document.getElementById('unlockBtn');
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        const toolsWrapper = document.getElementById('toolsWrapper');
+        
+        const copyBtn = document.getElementById('copyBtn');
+        const toast = document.getElementById('toast');
+        const toastMsg = document.getElementById('toastMsg');
+        const moveToBtn = document.getElementById('moveToBtn');
+        const moveToContainer = document.getElementById('moveToContainer');
+        
+        // Dropdown Elements
+        const audienceSelector = document.getElementById('audienceSelector');
+        const audienceMenu = document.getElementById('audienceMenu');
+        const stopSharingBtn = document.getElementById('stopSharingBtn');
+
+        let isSharingActive = false; // State to track sharing
+
+        // Panel Toggle Logic
+        shareBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (sharePanel.classList.contains('hidden')) {
+                sharePanel.classList.remove('hidden');
+            } else {
+                sharePanel.classList.add('hidden');
+                audienceMenu.classList.add('hidden');
+            }
+        });
+
+        // Close panel and dropdowns when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!sharePanel.contains(e.target) && !shareBtn.contains(e.target)) {
+                sharePanel.classList.add('hidden');
+            }
+            if (audienceMenu && !audienceMenu.contains(e.target) && !audienceSelector.contains(e.target)) {
+                audienceMenu.classList.add('hidden');
+            }
+        });
+
+        // Audience Dropdown Toggle (Only works if active)
+        audienceSelector.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if(isSharingActive) {
+                audienceMenu.classList.toggle('hidden');
+            }
+        });
+
+        // Core Interaction: Big CTA Button triggers upload/sharing
+        unlockBtn.addEventListener('click', () => {
+            // Hide unlock overlay
+            unlockOverlay.classList.add('hidden');
+            
+            // Show Loading
+            loadingOverlay.classList.remove('hidden');
+            loadingOverlay.classList.add('flex');
+            
+            // Keep move to button disabled while uploading
+            moveToContainer.classList.add('opacity-50', 'pointer-events-none');
+
+            // Simulate Network Request
+            setTimeout(() => {
+                // Hide Loading
+                loadingOverlay.classList.add('hidden');
+                loadingOverlay.classList.remove('flex');
+                
+                // Enable the tools
+                toolsWrapper.classList.remove('opacity-40', 'grayscale', 'pointer-events-none');
+                
+                // Enable move to button
+                moveToContainer.classList.remove('opacity-50', 'pointer-events-none');
+                
+                isSharingActive = true;
+                
+            }, 1200); // 1.2s fake loading
+        });
+
+        // Core Interaction: Stop Sharing (Resets the UI)
+        stopSharingBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            audienceMenu.classList.add('hidden');
+            
+            // Disable tools
+            toolsWrapper.classList.add('opacity-40', 'grayscale', 'pointer-events-none');
+            
+            // Show big CTA again
+            unlockOverlay.classList.remove('hidden');
+            
+            // Reset Move To
+            moveToContainer.classList.add('opacity-50', 'pointer-events-none');
+            
+            isSharingActive = false;
+            
+            showToast('Link sharing turned off');
+        });
+
+        // Initial state for Move To button
+        moveToContainer.classList.add('opacity-50', 'pointer-events-none');
+
+        // Copy Button Logic
+        if(copyBtn) {
+            copyBtn.addEventListener('click', () => {
+                showToast('Link copied to clipboard!');
+                copyBtn.innerText = 'Copied!';
+                copyBtn.classList.replace('bg-blue-600', 'bg-green-600');
+                copyBtn.classList.replace('hover:bg-blue-700', 'hover:bg-green-700');
+                
+                setTimeout(() => {
+                    copyBtn.innerText = 'Copy Link';
+                    copyBtn.classList.replace('bg-green-600', 'bg-blue-600');
+                    copyBtn.classList.replace('hover:bg-green-700', 'hover:bg-blue-700');
+                }, 2000);
+            });
+        }
+        
+        // Move To Button Interaction
+        moveToBtn.addEventListener('click', () => {
+            if(isSharingActive) {
+                showToast('Open "Move File" dialog...');
+            }
+        });
+
+        // Global Toast Logic
+        let toastTimeout;
+        function showToast(msg) {
+            clearTimeout(toastTimeout);
+            toastMsg.innerText = msg;
+            toast.classList.remove('opacity-0');
+            toastTimeout = setTimeout(() => {
+                toast.classList.add('opacity-0');
+            }, 2000);
+        }
+    </script>
+</body>
+</html>
