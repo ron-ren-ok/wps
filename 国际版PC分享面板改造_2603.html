@@ -171,7 +171,7 @@
                     <!-- Tooltip for Path -->
                     <div class="absolute top-full right-0 mt-2 w-max max-w-[200px] px-2 py-1 bg-gray-700 text-white text-xs rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50 tooltip-arrow-up hidden group-hover:block text-center">
                         <div class="font-semibold mb-0.5">Location</div>
-                        <div class="text-gray-300 truncate">/My Cloud/Uploaded</div>
+                        <div id="pathTooltipText" class="text-gray-300 truncate">/My Cloud/AutoUploaded</div>
                         <div class="text-blue-300 text-[10px] mt-1">Click to move</div>
                     </div>
                 </div>
@@ -346,6 +346,72 @@
         <span id="toastMsg">Link copied</span>
     </div>
 
+    <!-- NEW: Move To Modal (Hidden by default) -->
+    <div id="moveModal" class="fixed inset-0 z-[100] hidden items-center justify-center bg-gray-900/40 backdrop-blur-sm transition-opacity font-sans">
+        <div class="bg-white rounded-xl shadow-2xl w-[420px] flex flex-col overflow-hidden transform transition-transform scale-95 opacity-0" id="moveModalContent">
+            
+            <!-- Modal Header -->
+            <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+                <h3 class="font-semibold text-gray-800">Move File</h3>
+                <button id="closeModalBtn" class="text-gray-400 hover:text-gray-600 transition p-1 rounded hover:bg-gray-200">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <!-- Modal Body (Folder Tree Mock) -->
+            <div class="p-2 h-64 overflow-y-auto bg-white border-b border-gray-100">
+                <div class="p-2 hover:bg-gray-50 rounded cursor-pointer flex items-center space-x-2 text-gray-700">
+                    <i class="fas fa-chevron-down text-[10px] text-gray-400 w-3"></i>
+                    <i class="fas fa-cloud text-blue-500"></i>
+                    <span class="text-sm font-medium">My Cloud</span>
+                </div>
+                <div class="pl-7">
+                    <div class="p-2 bg-blue-50 rounded cursor-pointer flex items-center justify-between text-blue-700 border border-blue-100">
+                        <div class="flex items-center space-x-2">
+                            <i class="fas fa-folder text-blue-400"></i>
+                            <span class="text-sm font-medium">AutoUploaded</span>
+                        </div>
+                        <i class="fas fa-check text-blue-600 text-xs"></i>
+                    </div>
+                    <div class="p-2 hover:bg-gray-50 rounded cursor-pointer flex items-center space-x-2 text-gray-700 transition">
+                        <i class="fas fa-folder text-gray-400"></i>
+                        <span class="text-sm">Project Documents</span>
+                    </div>
+                    <div class="p-2 hover:bg-gray-50 rounded cursor-pointer flex items-center space-x-2 text-gray-700 transition">
+                        <i class="fas fa-folder text-gray-400"></i>
+                        <span class="text-sm">Personal</span>
+                    </div>
+                </div>
+                <div class="p-2 hover:bg-gray-50 rounded cursor-pointer flex items-center space-x-2 text-gray-700 mt-2 border-t border-gray-50 pt-3">
+                    <i class="fas fa-plus text-gray-400 ml-1"></i>
+                    <span class="text-sm">Create new folder</span>
+                </div>
+            </div>
+
+            <!-- Modal Footer (Checkbox & Actions) -->
+            <div class="px-6 py-4 bg-gray-50 flex flex-col space-y-4">
+                <label class="flex items-start space-x-2 cursor-pointer group">
+                    <div class="relative flex items-center pt-0.5">
+                        <input type="checkbox" id="defaultPathCheckbox" class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 cursor-pointer">
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="text-sm text-gray-700 font-medium group-hover:text-gray-900 transition">Set as default folder</span>
+                        <span class="text-xs text-gray-500">Future shared files will be auto-uploaded here</span>
+                    </div>
+                </label>
+                
+                <div class="flex justify-end space-x-3 pt-2">
+                    <button id="cancelMoveBtn" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition">
+                        Cancel
+                    </button>
+                    <button id="confirmMoveBtn" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-lg hover:bg-blue-700 transition">
+                        Move Here
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         // DOM Elements
         const shareBtn = document.getElementById('shareBtn');
@@ -361,15 +427,15 @@
         const toastMsg = document.getElementById('toastMsg');
         const moveToBtn = document.getElementById('moveToBtn');
         const moveToContainer = document.getElementById('moveToContainer');
+        const pathTooltipText = document.getElementById('pathTooltipText');
         
-        // Dropdown Elements
-        const audienceSelector = document.getElementById('audienceSelector');
-        const audienceMenu = document.getElementById('audienceMenu');
-        const stopSharingBtn = document.getElementById('stopSharingBtn');
-
-        let isSharingActive = false; // State to track sharing
-
-        // Panel Toggle Logic
+        // Modal Elements
+        const moveModal = document.getElementById('moveModal');
+        const moveModalContent = document.getElementById('moveModalContent');
+        const closeModalBtn = document.getElementById('closeModalBtn');
+        const cancelMoveBtn = document.getElementById('cancelMoveBtn');
+        const confirmMoveBtn = document.getElementById('confirmMoveBtn');
+        const defaultPathCheckbox = document.getElementById('defaultPathCheckbox');
         shareBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             if (sharePanel.classList.contains('hidden')) {
@@ -468,8 +534,51 @@
         // Move To Button Interaction
         moveToBtn.addEventListener('click', () => {
             if(isSharingActive) {
-                showToast('Open "Move File" dialog...');
+                // Open Modal
+                moveModal.classList.remove('hidden');
+                moveModal.classList.add('flex');
+                // Trigger animation
+                setTimeout(() => {
+                    moveModalContent.classList.remove('scale-95', 'opacity-0');
+                    moveModalContent.classList.add('scale-100', 'opacity-100');
+                }, 10);
             }
+        });
+
+        // Close Modal Logic
+        function closeMoveModal() {
+            moveModalContent.classList.remove('scale-100', 'opacity-100');
+            moveModalContent.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => {
+                moveModal.classList.add('hidden');
+                moveModal.classList.remove('flex');
+            }, 200); // Wait for transition
+        }
+
+        closeModalBtn.addEventListener('click', closeMoveModal);
+        cancelMoveBtn.addEventListener('click', closeMoveModal);
+        
+        // Close modal when clicking outside content
+        moveModal.addEventListener('click', (e) => {
+            if (e.target === moveModal) {
+                closeMoveModal();
+            }
+        });
+
+        // Confirm Move Logic
+        confirmMoveBtn.addEventListener('click', () => {
+            const isDefault = defaultPathCheckbox.checked;
+            
+            // Mock updating UI
+            pathTooltipText.innerText = '/My Cloud/Project Documents'; // Simulating a folder change
+            
+            if (isDefault) {
+                showToast('File moved and default upload path updated!');
+            } else {
+                showToast('File successfully moved!');
+            }
+            
+            closeMoveModal();
         });
 
         // Global Toast Logic
