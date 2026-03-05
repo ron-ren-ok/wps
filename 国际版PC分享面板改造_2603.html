@@ -226,7 +226,7 @@
                                             <i class="fas fa-chevron-down text-[10px] group-hover:text-blue-600 transition-colors"></i>
                                         </div>
                                         
-                                        <!-- Mock Dropdown Menu (Includes Stop Sharing) -->
+                                        <!-- Mock Audience Menu -->
                                         <div id="audienceMenu" class="hidden absolute top-full left-0 mt-1 w-48 bg-white rounded shadow-xl border border-gray-100 z-50 py-1 text-xs text-gray-700">
                                             <div class="px-3 py-2 hover:bg-gray-50 cursor-pointer flex items-center" onclick="showToast('Changed to: Anyone with the link')"><i class="fas fa-globe-americas w-5 text-gray-400"></i> Anyone with the link</div>
                                             <div class="px-3 py-2 hover:bg-gray-50 cursor-pointer flex items-center" onclick="showToast('Changed to: Only invited people')"><i class="fas fa-lock w-5 text-gray-400"></i> Only invited people</div>
@@ -236,14 +236,30 @@
                                     </div>
                                     
                                     <!-- Right: Permission + Advanced Settings -->
-                                    <div class="flex items-center space-x-2">
-                                        <!-- Permission Dropdown -->
-                                        <div class="text-gray-500 text-xs cursor-pointer hover:text-blue-600 flex items-center space-x-1" onclick="showToast('Permission settings...')">
-                                            <span>Can View</span>
+                                    <div class="flex items-center space-x-2 relative">
+                                        
+                                        <!-- NEW: Advanced Permission Dropdown -->
+                                        <div id="permissionSelector" class="text-gray-500 text-xs cursor-pointer hover:text-blue-600 flex items-center space-x-1">
+                                            <span id="permissionText">Can view</span>
                                             <i class="fas fa-chevron-down text-[10px]"></i>
                                         </div>
+                                        
+                                        <!-- NEW: Permission Menu Options -->
+                                        <div id="permissionMenu" class="hidden absolute top-full right-6 mt-1 w-32 bg-white rounded shadow-xl border border-gray-100 z-50 py-1 text-xs text-gray-700">
+                                            <div class="px-3 py-2 hover:bg-gray-50 cursor-pointer flex items-center justify-between permission-option" data-value="Can view">
+                                                <span>Can view</span><i class="fas fa-check text-blue-600"></i>
+                                            </div>
+                                            <div class="px-3 py-2 hover:bg-gray-50 cursor-pointer flex items-center justify-between permission-option" data-value="Can comment">
+                                                <span>Can comment</span><i class="fas fa-check text-blue-600 hidden"></i>
+                                            </div>
+                                            <div class="px-3 py-2 hover:bg-gray-50 cursor-pointer flex items-center justify-between permission-option" data-value="Can edit">
+                                                <span>Can edit</span><i class="fas fa-check text-blue-600 hidden"></i>
+                                            </div>
+                                        </div>
+
                                         <!-- Vertical Separator -->
                                         <div class="h-3 w-px bg-gray-300"></div>
+                                        
                                         <!-- Advanced Settings Icon -->
                                         <div class="text-gray-400 hover:text-gray-700 cursor-pointer p-1 rounded-full hover:bg-gray-200 transition" title="Advanced Settings (Watermark, Password, Validity)" onclick="showToast('Advanced Settings...')">
                                             <i class="fas fa-cog text-xs"></i>
@@ -436,6 +452,20 @@
         const cancelMoveBtn = document.getElementById('cancelMoveBtn');
         const confirmMoveBtn = document.getElementById('confirmMoveBtn');
         const defaultPathCheckbox = document.getElementById('defaultPathCheckbox');
+        
+        // Dropdown Elements
+        const audienceSelector = document.getElementById('audienceSelector');
+        const audienceMenu = document.getElementById('audienceMenu');
+        const stopSharingBtn = document.getElementById('stopSharingBtn');
+        
+        const permissionSelector = document.getElementById('permissionSelector');
+        const permissionMenu = document.getElementById('permissionMenu');
+        const permissionText = document.getElementById('permissionText');
+        const permissionOptions = document.querySelectorAll('.permission-option');
+
+        let isSharingActive = false; // State to track sharing
+
+        // Panel Toggle Logic
         shareBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             if (sharePanel.classList.contains('hidden')) {
@@ -443,6 +473,7 @@
             } else {
                 sharePanel.classList.add('hidden');
                 audienceMenu.classList.add('hidden');
+                permissionMenu.classList.add('hidden');
             }
         });
 
@@ -454,14 +485,48 @@
             if (audienceMenu && !audienceMenu.contains(e.target) && !audienceSelector.contains(e.target)) {
                 audienceMenu.classList.add('hidden');
             }
+            if (permissionMenu && !permissionMenu.contains(e.target) && !permissionSelector.contains(e.target)) {
+                permissionMenu.classList.add('hidden');
+            }
         });
 
-        // Audience Dropdown Toggle (Only works if active)
+        // Audience Dropdown Toggle
         audienceSelector.addEventListener('click', (e) => {
             e.stopPropagation();
             if(isSharingActive) {
                 audienceMenu.classList.toggle('hidden');
+                permissionMenu.classList.add('hidden'); // Close other menu
             }
+        });
+
+        // Permission Dropdown Toggle
+        permissionSelector.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if(isSharingActive) {
+                permissionMenu.classList.toggle('hidden');
+                audienceMenu.classList.add('hidden'); // Close other menu
+            }
+        });
+
+        // Handle Permission Selection
+        permissionOptions.forEach(option => {
+            option.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const value = option.getAttribute('data-value');
+                
+                // Update text
+                permissionText.innerText = value;
+                
+                // Update checkmarks
+                permissionOptions.forEach(opt => opt.querySelector('.fa-check').classList.add('hidden'));
+                option.querySelector('.fa-check').classList.remove('hidden');
+                
+                // Close menu
+                permissionMenu.classList.add('hidden');
+                
+                // Show toast
+                showToast(`Link permission updated to: ${value}`);
+            });
         });
 
         // Core Interaction: Big CTA Button triggers upload/sharing
@@ -497,6 +562,7 @@
         stopSharingBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             audienceMenu.classList.add('hidden');
+            permissionMenu.classList.add('hidden');
             
             // Disable tools
             toolsWrapper.classList.add('opacity-40', 'grayscale', 'pointer-events-none');
