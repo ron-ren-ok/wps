@@ -45,6 +45,15 @@
             50% { opacity: 0; }
         }
         
+        /* Toggle Switch */
+        .toggle-checkbox:checked {
+            right: 0;
+            border-color: var(--wps-blue);
+        }
+        .toggle-checkbox:checked + .toggle-label {
+            background-color: var(--wps-blue);
+        }
+
         /* Panel Animation */
         .panel-enter {
             animation: slideIn 0.2s ease-out forwards;
@@ -85,6 +94,17 @@
             border-width: 5px;
             border-style: solid;
             border-color: #374151 transparent transparent transparent;
+        }
+
+        /* Tooltip Arrow - Pointing Up & Aligned Right (for Switch) */
+        .tooltip-arrow-up-right::after {
+            content: "";
+            position: absolute;
+            bottom: 100%;
+            right: 15px; /* Aligned with the switch circle */
+            border-width: 5px;
+            border-style: solid;
+            border-color: transparent transparent #1f2937 transparent; /* Matches bg-gray-800 */
         }
     </style>
 </head>
@@ -183,13 +203,24 @@
                 <!-- SECTION 1: LINK SHARING (链接分享部分) -->
                 <div class="bg-white mb-2 p-5 pb-2 relative">
                     
-                    <!-- Section Header -->
+                    <!-- Section Header with Toggle -->
                     <div class="flex items-center justify-between mb-4">
                         <div class="flex items-center space-x-2">
                             <div class="p-1.5 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center">
                                 <i class="fas fa-link"></i>
                             </div>
                             <div class="font-semibold text-gray-800 text-base">Link Sharing</div>
+                        </div>
+                        
+                        <!-- Pure Physical Switch -->
+                        <div class="relative inline-block w-11 h-6 align-middle select-none group">
+                            <input type="checkbox" id="linkShareToggle" class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 appearance-none cursor-pointer border-gray-300 outline-none transition-all duration-300 ease-in-out top-0.5 left-0.5"/>
+                            <label for="linkShareToggle" class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer transition-colors duration-300 ease-in-out"></label>
+                            
+                            <!-- Instant Tooltip for Switch (Fixed: Pointing UP, aligned to the bottom of the switch) -->
+                            <div class="absolute top-full right-0 mt-2.5 w-max max-w-[200px] px-3 py-1.5 bg-gray-800 text-white text-[11px] rounded shadow-lg opacity-0 group-hover:opacity-100 pointer-events-none z-50 tooltip-arrow-up-right hidden group-hover:block transition-none text-left leading-tight whitespace-nowrap">
+                                <span id="switchTooltipText">Turn on link sharing to collaborate</span>
+                            </div>
                         </div>
                     </div>
 
@@ -226,25 +257,23 @@
                                             <i class="fas fa-chevron-down text-[10px] group-hover:text-blue-600 transition-colors"></i>
                                         </div>
                                         
-                                        <!-- Mock Audience Menu -->
+                                        <!-- Audience Menu -->
                                         <div id="audienceMenu" class="hidden absolute top-full left-0 mt-1 w-48 bg-white rounded shadow-xl border border-gray-100 z-50 py-1 text-xs text-gray-700">
                                             <div class="px-3 py-2 hover:bg-gray-50 cursor-pointer flex items-center" onclick="showToast('Changed to: Anyone with the link')"><i class="fas fa-globe-americas w-5 text-gray-400"></i> Anyone with the link</div>
                                             <div class="px-3 py-2 hover:bg-gray-50 cursor-pointer flex items-center" onclick="showToast('Changed to: Only invited people')"><i class="fas fa-lock w-5 text-gray-400"></i> Only invited people</div>
-                                            <div class="border-t border-gray-100 my-1"></div>
-                                            <div id="stopSharingBtn" class="px-3 py-2 hover:bg-red-50 text-red-600 cursor-pointer flex items-center font-medium"><i class="fas fa-ban w-5 text-red-400"></i> Stop Sharing</div>
                                         </div>
                                     </div>
                                     
                                     <!-- Right: Permission + Advanced Settings -->
                                     <div class="flex items-center space-x-2 relative">
                                         
-                                        <!-- NEW: Advanced Permission Dropdown -->
+                                        <!-- Advanced Permission Dropdown -->
                                         <div id="permissionSelector" class="text-gray-500 text-xs cursor-pointer hover:text-blue-600 flex items-center space-x-1">
                                             <span id="permissionText">Can view</span>
                                             <i class="fas fa-chevron-down text-[10px]"></i>
                                         </div>
                                         
-                                        <!-- NEW: Permission Menu Options -->
+                                        <!-- Permission Menu Options -->
                                         <div id="permissionMenu" class="hidden absolute top-full right-6 mt-1 w-32 bg-white rounded shadow-xl border border-gray-100 z-50 py-1 text-xs text-gray-700">
                                             <div class="px-3 py-2 hover:bg-gray-50 cursor-pointer flex items-center justify-between permission-option" data-value="Can view">
                                                 <span>Can view</span><i class="fas fa-check text-blue-600"></i>
@@ -362,11 +391,10 @@
         <span id="toastMsg">Link copied</span>
     </div>
 
-    <!-- NEW: Move To Modal (Hidden by default) -->
+    <!-- Move To Modal -->
     <div id="moveModal" class="fixed inset-0 z-[100] hidden items-center justify-center bg-gray-900/40 backdrop-blur-sm transition-opacity font-sans">
         <div class="bg-white rounded-xl shadow-2xl w-[420px] flex flex-col overflow-hidden transform transition-transform scale-95 opacity-0" id="moveModalContent">
             
-            <!-- Modal Header -->
             <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
                 <h3 class="font-semibold text-gray-800">Move File</h3>
                 <button id="closeModalBtn" class="text-gray-400 hover:text-gray-600 transition p-1 rounded hover:bg-gray-200">
@@ -374,7 +402,6 @@
                 </button>
             </div>
 
-            <!-- Modal Body (Folder Tree Mock) -->
             <div class="p-2 h-64 overflow-y-auto bg-white border-b border-gray-100">
                 <div class="p-2 hover:bg-gray-50 rounded cursor-pointer flex items-center space-x-2 text-gray-700">
                     <i class="fas fa-chevron-down text-[10px] text-gray-400 w-3"></i>
@@ -404,7 +431,6 @@
                 </div>
             </div>
 
-            <!-- Modal Footer (Checkbox & Actions) -->
             <div class="px-6 py-4 bg-gray-50 flex flex-col space-y-4">
                 <label class="flex items-start space-x-2 cursor-pointer group">
                     <div class="relative flex items-center pt-0.5">
@@ -433,6 +459,9 @@
         const shareBtn = document.getElementById('shareBtn');
         const sharePanel = document.getElementById('sharePanel');
         
+        // Link Sharing Toggle & CTA
+        const linkShareToggle = document.getElementById('linkShareToggle');
+        const toggleLabel = document.querySelector('.toggle-label');
         const unlockOverlay = document.getElementById('unlockOverlay');
         const unlockBtn = document.getElementById('unlockBtn');
         const loadingOverlay = document.getElementById('loadingOverlay');
@@ -456,7 +485,6 @@
         // Dropdown Elements
         const audienceSelector = document.getElementById('audienceSelector');
         const audienceMenu = document.getElementById('audienceMenu');
-        const stopSharingBtn = document.getElementById('stopSharingBtn');
         
         const permissionSelector = document.getElementById('permissionSelector');
         const permissionMenu = document.getElementById('permissionMenu');
@@ -495,7 +523,7 @@
             e.stopPropagation();
             if(isSharingActive) {
                 audienceMenu.classList.toggle('hidden');
-                permissionMenu.classList.add('hidden'); // Close other menu
+                permissionMenu.classList.add('hidden');
             }
         });
 
@@ -504,7 +532,7 @@
             e.stopPropagation();
             if(isSharingActive) {
                 permissionMenu.classList.toggle('hidden');
-                audienceMenu.classList.add('hidden'); // Close other menu
+                audienceMenu.classList.add('hidden');
             }
         });
 
@@ -529,8 +557,18 @@
             });
         });
 
-        // Core Interaction: Big CTA Button triggers upload/sharing
-        unlockBtn.addEventListener('click', () => {
+        // Start Sharing Function (Triggered by Big Button OR Toggle)
+        function startSharing() {
+            if (isSharingActive) return; // Prevent double trigger
+
+            // Sync Toggle State
+            linkShareToggle.checked = true;
+            toggleLabel.classList.remove('bg-gray-300');
+            toggleLabel.classList.add('bg-blue-600');
+            
+            // Update Switch Tooltip Text dynamically
+            document.getElementById('switchTooltipText').innerText = 'Turn off link sharing';
+
             // Hide unlock overlay
             unlockOverlay.classList.add('hidden');
             
@@ -538,8 +576,9 @@
             loadingOverlay.classList.remove('hidden');
             loadingOverlay.classList.add('flex');
             
-            // Keep move to button disabled while uploading
+            // Keep UI elements disabled while uploading
             moveToContainer.classList.add('opacity-50', 'pointer-events-none');
+            linkShareToggle.disabled = true;
 
             // Simulate Network Request
             setTimeout(() => {
@@ -549,18 +588,25 @@
                 
                 // Enable the tools
                 toolsWrapper.classList.remove('opacity-40', 'grayscale', 'pointer-events-none');
-                
-                // Enable move to button
                 moveToContainer.classList.remove('opacity-50', 'pointer-events-none');
+                linkShareToggle.disabled = false;
                 
                 isSharingActive = true;
-                
-            }, 1200); // 1.2s fake loading
-        });
+                showToast('Link created successfully');
+            }, 1200);
+        }
 
-        // Core Interaction: Stop Sharing (Resets the UI)
-        stopSharingBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
+        // Stop Sharing Function
+        function stopSharing() {
+            // Sync Toggle State
+            linkShareToggle.checked = false;
+            toggleLabel.classList.add('bg-gray-300');
+            toggleLabel.classList.remove('bg-blue-600');
+
+            // Update Switch Tooltip Text dynamically
+            document.getElementById('switchTooltipText').innerText = 'Turn on link sharing to collaborate';
+
+            // Hide any open menus
             audienceMenu.classList.add('hidden');
             permissionMenu.classList.add('hidden');
             
@@ -574,11 +620,21 @@
             moveToContainer.classList.add('opacity-50', 'pointer-events-none');
             
             isSharingActive = false;
-            
             showToast('Link sharing turned off');
+        }
+
+        // Attach listeners for Start/Stop
+        unlockBtn.addEventListener('click', startSharing);
+        
+        linkShareToggle.addEventListener('change', function() {
+            if (this.checked) {
+                startSharing();
+            } else {
+                stopSharing();
+            }
         });
 
-        // Initial state for Move To button
+        // Initial state setup for Move To button
         moveToContainer.classList.add('opacity-50', 'pointer-events-none');
 
         // Copy Button Logic
@@ -597,13 +653,11 @@
             });
         }
         
-        // Move To Button Interaction
+        // Move To Modal Logic
         moveToBtn.addEventListener('click', () => {
             if(isSharingActive) {
-                // Open Modal
                 moveModal.classList.remove('hidden');
                 moveModal.classList.add('flex');
-                // Trigger animation
                 setTimeout(() => {
                     moveModalContent.classList.remove('scale-95', 'opacity-0');
                     moveModalContent.classList.add('scale-100', 'opacity-100');
@@ -611,39 +665,33 @@
             }
         });
 
-        // Close Modal Logic
         function closeMoveModal() {
             moveModalContent.classList.remove('scale-100', 'opacity-100');
             moveModalContent.classList.add('scale-95', 'opacity-0');
             setTimeout(() => {
                 moveModal.classList.add('hidden');
                 moveModal.classList.remove('flex');
-            }, 200); // Wait for transition
+            }, 200); 
         }
 
         closeModalBtn.addEventListener('click', closeMoveModal);
         cancelMoveBtn.addEventListener('click', closeMoveModal);
         
-        // Close modal when clicking outside content
         moveModal.addEventListener('click', (e) => {
             if (e.target === moveModal) {
                 closeMoveModal();
             }
         });
 
-        // Confirm Move Logic
         confirmMoveBtn.addEventListener('click', () => {
             const isDefault = defaultPathCheckbox.checked;
-            
-            // Mock updating UI
-            pathTooltipText.innerText = '/My Cloud/Project Documents'; // Simulating a folder change
+            pathTooltipText.innerText = '/My Cloud/Project Documents'; 
             
             if (isDefault) {
                 showToast('File moved and default upload path updated!');
             } else {
                 showToast('File successfully moved!');
             }
-            
             closeMoveModal();
         });
 
