@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WPS Office - 卸载成功</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col items-center justify-center py-8 px-6 font-sans">
+
+    <!-- 方案三：跨端直给型 主容器 -->
+    <main class="w-full max-w-4xl flex bg-white rounded-2xl shadow-xl overflow-hidden flex-row min-h-[500px]">
+        
+        <!-- 左侧：弱化留存 (黄金分割 38.2%) -->
+        <section class="w-[38.2%] p-8 flex flex-col justify-center border-r border-gray-100 bg-white">
+            <div class="flex items-center space-x-2 mb-6">
+                <svg width="24" height="24" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="48" height="48" rx="8" fill="#E53935"/>
+                    <path d="M10 14L16 36H21.5L24 24L26.5 36H32L38 14H31.5L28.5 29L26.5 14H21.5L19.5 29L16.5 14H10Z" fill="white"/>
+                </svg>
+                <span class="font-bold text-gray-700">WPS Office</span>
+            </div>
+            
+            <h1 class="text-xl font-bold text-gray-800 mb-3">客户端已彻底移除</h1>
+            <p class="text-xs text-gray-500 mb-8 leading-relaxed">
+                文档已安全同步至WPS Cloud，您可通过网页版继续访问云文档，免安装，更高效！
+            </p>
+
+            <a href="https://ap.wps.com/docs/latest" target="_blank" class="w-full border border-gray-200 hover:bg-gray-50 text-gray-600 font-medium py-3 px-4 rounded-lg flex items-center justify-center transition-colors text-sm">
+                访问网页版
+                <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+            </a>
+        </section>
+
+        <!-- 右侧：强导量 (黄金分割 61.8%) -->
+        <section class="w-[61.8%] p-10 flex flex-col justify-center items-center bg-gradient-to-b from-blue-50 to-white relative cursor-pointer group hover:shadow-inner transition-all duration-300" onclick="triggerDownload('360TotalSecurity_Free.exe')">
+            <div class="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 shadow-sm">
+                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                </svg>
+            </div>
+
+            <h2 class="text-2xl font-extrabold text-gray-800 mb-3 group-hover:text-blue-700 transition-colors">卸载后建议进行深度清理</h2>
+            <p class="text-sm text-gray-500 mb-8 max-w-md text-center leading-relaxed">
+                检测到系统可能存在历史残留缓存，建议立即清理无效注册表与冗余文件，释放磁盘空间。
+            </p>
+
+            <button class="w-2/3 bg-blue-600 group-hover:bg-blue-700 text-white font-bold py-4 rounded-xl shadow-lg transition-colors text-lg flex items-center justify-center pointer-events-none">
+                立即清理
+                <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+            </button>
+            
+            <p class="text-[11px] text-gray-400 mt-6 flex items-center justify-center gap-1">
+                <svg class="w-3 h-3 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                由 360 Total Security 提供官方安全支持
+            </p>
+        </section>
+    </main>
+
+    <!-- 全局极简页脚 -->
+    <footer class="mt-8 text-center text-xs text-gray-400 w-full max-w-4xl">
+        <div class="flex justify-center items-center space-x-4 mb-2">
+            <a href="https://www.wps.com/privacy-policy" target="_blank" class="hover:text-gray-600 transition-colors">Privacy Policy</a>
+            <span>|</span>
+            <a href="https://www.wps.com/support" target="_blank" class="hover:text-gray-600 transition-colors">Support</a>
+        </div>
+        <p>&copy; 2026 WPS Office. All rights reserved.</p>
+    </footer>
+
+    <!-- 全局提示框 -->
+    <div id="msgBox" class="fixed top-10 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-6 py-3 rounded-lg shadow-xl opacity-0 pointer-events-none transition-opacity duration-300 z-50"></div>
+
+    <script>
+        // ================= 全局基础工具 =================
+        const msgBox = document.getElementById('msgBox');
+        
+        function showMessage(msg) {
+            msgBox.textContent = msg;
+            msgBox.style.opacity = '1';
+            setTimeout(() => { msgBox.style.opacity = '0'; }, 3000);
+        }
+
+        function triggerDownload(filename) {
+            showMessage('正在拉起 360 Total Security 下载...');
+            // 模拟下载流程
+            setTimeout(() => {
+                const downloadLink = document.createElement('a');
+                downloadLink.href = '#dummy.exe';
+                downloadLink.download = filename;
+                document.body.appendChild(downloadLink);
+                downloadLink.click();
+                document.body.removeChild(downloadLink);
+            }, 1000);
+        }
+    </script>
+</body>
+</html>
