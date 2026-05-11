@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WPS Pro - H5 Container Demo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+        body { font-family: 'Inter', sans-serif; margin: 0; padding: 0; background-color: #0f111a; color: white; }
+        
+        .text-gold { color: #facc15; }
+        .bg-gold { background-color: #facc15; }
+        .hover-bg-gold:hover { background-color: #eab308; }
+        .partner-checkbox:checked + div { background-color: #facc15; border-color: #facc15; }
+        .partner-checkbox:checked + div svg { display: block; }
+        .animate-pulse-slow { animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+        
+        .fade-in { animation: fadeIn 0.3s forwards; display: flex !important; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* PC Simulator Styles */
+        .pc-container {
+            width: 100%;
+            max-width: 1920px;
+            aspect-ratio: 16/9;
+            background-color: #1e1e1e;
+            position: relative;
+            overflow: hidden;
+            margin: 0 auto;
+            border: 1px solid #333;
+            box-shadow: 0 0 30px rgba(0,0,0,0.8);
+        }
+        
+        .wps-mock-bg {
+            position: absolute;
+            inset: 0;
+            background: #f3f4f6;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .h5-container {
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        ::-webkit-scrollbar { width: 0px; }
+    </style>
+</head>
+<body class="flex flex-col h-screen overflow-hidden">
+
+    <!-- Top Control Bar (For PM Demo purposes) -->
+    <div class="bg-gray-900 border-b border-gray-800 p-4 flex justify-between items-center z-50 relative shrink-0">
+        <div>
+            <h1 class="text-lg font-bold text-white flex items-center">
+                <svg class="w-5 h-5 mr-2 text-blue-500" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/></svg>
+                WPS Pro 挽留 H5 交互演示 - 最终 PRD 版
+            </h1>
+        </div>
+        
+        <div class="flex flex-col items-end space-y-2">
+            <span class="text-xs text-gray-400">选择接口返回场景 (发奖流转)：</span>
+            <div class="flex space-x-2 bg-gray-800 p-1 rounded-lg" id="tab-container">
+                <button id="tab-success" class="px-4 py-1.5 rounded-md text-sm font-medium transition-colors bg-blue-600 text-white shadow" onclick="switchScenario('success')">
+                    场景1: 领取成功
+                </button>
+                <button id="tab-claimed" class="px-4 py-1.5 rounded-md text-sm font-medium transition-colors text-gray-400 hover:text-white hover:bg-gray-700" onclick="switchScenario('claimed')">
+                    场景2: 历史已领取
+                </button>
+                <button id="tab-error" class="px-4 py-1.5 rounded-md text-sm font-medium transition-colors text-gray-400 hover:text-white hover:bg-gray-700" onclick="switchScenario('error')">
+                    场景3: 接口/网络异常
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Simulator Area -->
+    <div class="flex-1 overflow-auto flex items-center justify-center p-4 bg-black">
+        <div class="pc-container rounded-xl">
+            
+            <!-- WPS UI Mockup Background -->
+            <div class="wps-mock-bg">
+                <div class="h-10 bg-white border-b border-gray-200 flex items-center justify-between px-4">
+                    <div class="flex items-center space-x-4">
+                        <div class="text-red-600 font-bold text-xl italic tracking-tighter">WPS</div>
+                        <div class="flex space-x-2">
+                            <div class="px-3 py-1 bg-gray-100 rounded text-xs text-gray-600 font-medium">Home</div>
+                            <div class="px-3 py-1 text-xs text-gray-500 font-medium">Document 1.docx</div>
+                        </div>
+                    </div>
+                    <div class="flex space-x-3">
+                        <div class="w-3 h-3 rounded-full bg-gray-300"></div>
+                        <div class="w-3 h-3 rounded-full bg-gray-300"></div>
+                        <div class="w-3 h-3 rounded-full bg-gray-300"></div>
+                    </div>
+                </div>
+                <div class="flex flex-1">
+                    <div class="w-16 border-r border-gray-200 bg-gray-50 flex flex-col items-center py-4 space-y-4">
+                        <div class="w-8 h-8 rounded bg-blue-100"></div>
+                        <div class="w-8 h-8 rounded bg-green-100"></div>
+                        <div class="w-8 h-8 rounded bg-red-100"></div>
+                    </div>
+                    <div class="flex-1 bg-gray-100 p-8 flex justify-center">
+                        <div class="w-[800px] bg-white shadow-sm h-full border border-gray-200 rounded"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Black Overlay -->
+            <div class="absolute inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-10" id="overlay">
+                
+                <!-- H5 Popup Container -->
+                <div class="h5-container bg-gradient-to-br from-[#1f1f1f] to-[#111111] rounded-2xl w-full max-w-[380px] overflow-hidden relative min-h-[500px] flex flex-col text-white">
+                    
+                    <button class="absolute top-3 right-3 text-gray-500 hover:text-white transition-colors z-20" onclick="closePopup()">
+                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                    </button>
+
+                    <!-- View 1: Main Content -->
+                    <div id="popup-main" class="flex flex-col flex-1 relative">
+                        <div class="pt-8 pb-4 px-6 text-center">
+                            <!-- Gift Icon -->
+                            <div class="relative w-16 h-16 mx-auto mb-3">
+                                <div class="w-full h-full rounded-full bg-gradient-to-tr from-yellow-600 to-yellow-300 flex items-center justify-center shadow-[0_0_20px_rgba(250,204,21,0.3)]">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8 text-gray-900">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 11.25v8.25a1.5 1.5 0 0 1-1.5 1.5H5.25a1.5 1.5 0 0 1-1.5-1.5v-8.25M12 4.875A2.625 2.625 0 1 0 9.375 7.5H12m0-2.625V7.5m0-2.625A2.625 2.625 0 1 1 14.625 7.5H12m0 0V21m-8.625-9.75h18c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125h-18c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z" />
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="text-gray-400 text-sm font-medium mb-1 tracking-wide">Welcome back</div>
+                            <h1 class="text-xl font-bold mb-1">Your 30-Day WPS Pro is Ready</h1>
+                        </div>
+
+                        <div class="px-6 pb-4">
+                            <div class="bg-gray-800 bg-opacity-50 rounded-xl p-3 space-y-2.5 border border-gray-700">
+                                <div class="flex items-center">
+                                    <div class="bg-red-500/20 p-1.5 rounded-lg mr-3"><svg class="w-4 h-4 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg></div>
+                                    <h3 class="text-xs font-semibold">Edit & Convert PDFs Instantly</h3>
+                                </div>
+                                <div class="flex items-center">
+                                    <div class="bg-blue-500/20 p-1.5 rounded-lg mr-3"><svg class="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg></div>
+                                    <h3 class="text-xs font-semibold">Easily Edit & Convert Images</h3>
+                                </div>
+                                <div class="flex items-center">
+                                    <div class="bg-purple-500/20 p-1.5 rounded-lg mr-3"><svg class="w-4 h-4 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"></path></svg></div>
+                                    <h3 class="text-xs font-semibold">Translate Documents Side-by-Side</h3>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Partner Checkbox -->
+                        <div id="partner-section" class="px-6 pb-4 transition-all duration-300">
+                            <label class="flex items-start cursor-pointer group bg-[#1a1c23] p-3 rounded-lg border border-gray-700 hover:border-gray-500 transition-colors">
+                                <div class="relative flex items-center justify-center mt-0.5">
+                                    <input type="checkbox" id="avastInstall" class="partner-checkbox opacity-0 absolute h-0 w-0" checked>
+                                    <div class="w-4 h-4 border border-gray-500 rounded flex items-center justify-center transition-colors group-hover:border-gray-400">
+                                        <svg class="w-3 h-3 text-gray-900 hidden pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                                    </div>
+                                </div>
+                                <div class="ml-3 flex-1">
+                                    <div class="flex items-center">
+                                        <div class="w-3 h-3 rounded-full bg-orange-500 mr-1.5"></div>
+                                        <span class="text-xs font-medium">Add Avast Free Antivirus</span>
+                                    </div>
+                                    <p class="text-gray-400 text-[10px] mt-1">Secure your device. Terms apply.</p>
+                                </div>
+                            </label>
+                        </div>
+
+                        <!-- CTA Area -->
+                        <div class="px-6 pb-6 text-center mt-auto">
+                            <!-- Countdown Timer -->
+                            <div class="flex items-center justify-center text-[10px] text-gray-400 mb-2">
+                                <svg class="w-3.5 h-3.5 mr-1 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                Offer expires in: <span class="text-gold font-mono font-medium ml-1" id="timer">23:59:59</span>
+                            </div>
+                            
+                            <button id="claim-btn" class="w-full flex items-center justify-center bg-gold hover-bg-gold text-gray-900 font-bold py-3 px-6 rounded-xl shadow-[0_4px_14px_0_rgba(250,204,21,0.3)] transition-all transform hover:scale-[1.02] active:scale-[0.98] animate-pulse-slow text-sm mb-2" onclick="processActivation()">
+                                <span>Claim My Gift</span>
+                            </button>
+                            <p class="text-gray-400 text-[10px]">Zero cost. No credit card required.</p>
+                        </div>
+                    </div>
+
+                    <!-- View 2: Success Content -->
+                    <div id="popup-success" class="hidden flex-col flex-1 items-center justify-center p-8 text-center">
+                        <div class="w-20 h-20 bg-green-500/20 rounded-full flex items-center justify-center mb-6">
+                            <svg class="w-10 h-10 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                        </div>
+                        <h2 class="text-2xl font-bold mb-2">WPS Pro Activated Successfully</h2>
+                        <div class="bg-gray-800/50 border border-gray-700 rounded-lg py-2 px-4 mb-6 inline-block">
+                            <p class="text-sm text-gray-400">Valid until</p>
+                            <p class="text-lg font-mono text-gold font-semibold expire-date-text">MM/DD HH:mm</p>
+                        </div>
+                        <button class="w-full bg-gray-700 hover:bg-gray-600 text-white font-bold py-3 px-6 rounded-xl transition-colors text-sm mt-auto" onclick="closePopup()">
+                            Start Exploring WPS Pro
+                        </button>
+                    </div>
+
+                    <!-- View 3: Failure/Claimed Content -->
+                    <div id="popup-failure" class="hidden flex-col flex-1 items-center justify-center p-8 text-center">
+                        <div class="w-20 h-20 bg-gray-800 rounded-full flex items-center justify-center mb-6 border border-gray-700 shadow-inner">
+                            <svg class="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        </div>
+                        <h2 class="text-2xl font-bold mb-3 text-white">Claim Failed</h2>
+                        <p class="text-gray-400 text-sm mb-8 leading-relaxed px-4">
+                            You've already claimed this offer.
+                        </p>
+                        <button class="w-full bg-gray-700 hover:bg-gray-600 text-white font-bold py-3 px-6 rounded-xl transition-colors text-sm mt-auto" onclick="closePopup()">
+                            Got It
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-10 right-10 bg-gray-800 text-white px-6 py-3 rounded-lg shadow-xl border border-gray-700 transform translate-y-10 opacity-0 transition-all duration-300 z-50 flex items-center hidden">
+        <svg id="toast-icon-info" class="w-5 h-5 text-blue-400 mr-2 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        <svg id="toast-icon-error" class="w-5 h-5 text-red-400 mr-2 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        <span id="toast-msg" class="text-sm font-medium">Notification</span>
+    </div>
+
+    <script>
+        let currentScenario = 'success'; 
+        let isProcessing = false;
+
+        // Timer Logic
+        let timeLeft = 24 * 60 * 60 - 1;
+        setInterval(() => {
+            let hours = Math.floor(timeLeft / 3600);
+            let minutes = Math.floor((timeLeft % 3600) / 60);
+            let seconds = timeLeft % 60;
+            const timeStr = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+            if(document.getElementById('timer')) {
+                document.getElementById('timer').innerText = timeStr;
+            }
+            timeLeft--;
+        }, 1000);
+
+        // Formats expiration date
+        function getExpireDateString() {
+            const date = new Date();
+            date.setDate(date.getDate() + 30);
+            return `${String(date.getMonth() + 1).padStart(2, '0')}/${String(date.getDate()).padStart(2, '0')} ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+        }
+        document.querySelector('.expire-date-text').innerText = getExpireDateString();
+
+        // Switch API Response Scenarios
+        function switchScenario(scenario) {
+            currentScenario = scenario;
+            
+            const tabs = ['success', 'claimed', 'error'];
+            tabs.forEach(t => {
+                const btn = document.getElementById(`tab-${t}`);
+                if (t === scenario) {
+                    btn.className = "px-4 py-1.5 rounded-md text-sm font-medium transition-colors bg-blue-600 text-white shadow";
+                } else {
+                    btn.className = "px-4 py-1.5 rounded-md text-sm font-medium transition-colors text-gray-400 hover:text-white hover:bg-gray-700";
+                }
+            });
+
+            resetPopup();
+        }
+
+        function resetPopup() {
+            isProcessing = false;
+            document.getElementById('overlay').style.display = 'flex';
+            
+            // Show main, hide others
+            document.getElementById('popup-main').classList.remove('hidden');
+            ['popup-success', 'popup-failure'].forEach(id => {
+                const el = document.getElementById(id);
+                el.classList.add('hidden');
+                el.classList.remove('fade-in');
+            });
+            
+            // Reset Button
+            const btn = document.getElementById('claim-btn');
+            btn.disabled = false;
+            btn.innerHTML = '<span>Claim My Gift</span>';
+            btn.className = "w-full flex items-center justify-center bg-gold hover-bg-gold text-gray-900 font-bold py-3 px-6 rounded-xl shadow-[0_4px_14px_0_rgba(250,204,21,0.3)] transition-all transform hover:scale-[1.02] active:scale-[0.98] animate-pulse-slow text-sm mb-2";
+        }
+
+        // Core Interaction (PRD 4.4.2 & 4.4.3)
+        function processActivation() {
+            if (isProcessing) return; 
+            
+            const btn = document.getElementById('claim-btn');
+            const isAvastChecked = document.getElementById('avastInstall').checked;
+            
+            // 1. Enter Processing State (Button Disabled)
+            isProcessing = true;
+            btn.disabled = true;
+            btn.classList.remove('animate-pulse-slow', 'hover:scale-[1.02]', 'active:scale-[0.98]', 'bg-gold', 'hover-bg-gold', 'text-gray-900');
+            btn.classList.add('bg-gray-700', 'text-gray-300', 'cursor-not-allowed');
+            btn.innerHTML = `
+                <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-gray-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Processing...
+            `;
+
+            // 2. Mock Parallel Execution: Notify Client for Download
+            if (isAvastChecked) {
+                showToast("JSBridge: 通知客户端后台静默下载第三方软件", "info");
+            }
+
+            // 3. Mock API Call Delay for Claiming WPS Pro
+            setTimeout(() => {
+                if (currentScenario === 'success') {
+                    // Scenario 1: Claim Success
+                    document.getElementById('popup-main').classList.add('hidden');
+                    document.getElementById('popup-success').classList.remove('hidden');
+                    document.getElementById('popup-success').classList.add('fade-in');
+                    
+                } else if (currentScenario === 'claimed') {
+                    // Scenario 2: Already Claimed (Failure Page)
+                    document.getElementById('popup-main').classList.add('hidden');
+                    document.getElementById('popup-failure').classList.remove('hidden');
+                    document.getElementById('popup-failure').classList.add('fade-in');
+                    
+                } else if (currentScenario === 'error') {
+                    // Scenario 3: Network Error / API Timeout
+                    showToast("Network error, please try again.", "error");
+                    
+                    // Reset Button to allow retry
+                    isProcessing = false;
+                    btn.disabled = false;
+                    btn.innerHTML = '<span>Claim My Gift</span>';
+                    btn.className = "w-full flex items-center justify-center bg-gold hover-bg-gold text-gray-900 font-bold py-3 px-6 rounded-xl shadow-[0_4px_14px_0_rgba(250,204,21,0.3)] transition-all transform hover:scale-[1.02] active:scale-[0.98] animate-pulse-slow text-sm mb-2";
+                }
+            }, 1500); // 1.5s API wait simulation
+        }
+
+        function closePopup() {
+            document.getElementById('overlay').style.display = 'none';
+        }
+
+        let toastTimeout;
+        function showToast(message, type = 'info') {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-msg').innerText = message;
+            
+            document.getElementById('toast-icon-info').classList.toggle('hidden', type !== 'info');
+            document.getElementById('toast-icon-error').classList.toggle('hidden', type !== 'error');
+            
+            clearTimeout(toastTimeout);
+            toast.classList.remove('hidden');
+            
+            // Animate in
+            requestAnimationFrame(() => {
+                toast.classList.remove('translate-y-10', 'opacity-0');
+            });
+
+            // Auto hide
+            toastTimeout = setTimeout(() => {
+                toast.classList.add('translate-y-10', 'opacity-0');
+                setTimeout(() => toast.classList.add('hidden'), 300);
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
