@@ -42,10 +42,6 @@ def row_value(rows: list[list[dict]], row: int, column: int) -> str:
         raise RuntimeError("The 日进度追踪 summary range is incomplete.") from exc
 
 
-def normalized_date(value: str) -> str:
-    return value.strip().replace("年", "-").replace("月", "-").replace("日", "").replace("/", "-")
-
-
 def last_status(rows: list[list[dict]], date_column: int, status_column: int) -> str:
     for row in reversed(rows):
         if len(row) > status_column:
@@ -54,16 +50,6 @@ def last_status(rows: list[list[dict]], date_column: int, status_column: int) ->
             if date and status:
                 return status
     return "状态待核对"
-
-
-def status_for_date(rows: list[list[dict]], target_date: str, date_column: int, status_column: int) -> tuple[str, bool]:
-    target = normalized_date(target_date)
-    for row in rows:
-        if len(row) > status_column and normalized_date(row[date_column].get("formattedValue", "")) == target:
-            status = row[status_column].get("formattedValue", "").strip()
-            if status:
-                return status, False
-    return last_status(rows, date_column, status_column), True
 
 
 def display_status(status: str) -> str:
@@ -93,10 +79,9 @@ def request_values() -> list[list[list[dict]]]:
 
 def card_text(summary: list[list[dict]], revenue_rows: list[list[dict]], users_rows: list[list[dict]]) -> str:
     # A1:P6 indices: row 2 => 1, row 4 => 3, row 6 => 5; B/D/F/H/J/L/N/P => 1/3/.../15.
-    cutoff = row_value(summary, 1, 4)
-    revenue_status, revenue_fallback = status_for_date(revenue_rows, cutoff, 0, 8)
-    users_status, users_fallback = status_for_date(users_rows, cutoff, 0, 8)
-    fallback_note = "\n\n⚠️ 状态待核对：未找到数据截止日对应的状态行，已使用最近一条状态。" if revenue_fallback or users_fallback else ""
+    # 状态表按天落数，日报发送时只使用其中最新的一条有效状态（通常为昨天）。
+    revenue_status = last_status(revenue_rows, 0, 8)
+    users_status = last_status(users_rows, 0, 8)
 
     def metric(row: int, unit: str, title: str) -> str:
         return (
@@ -112,7 +97,7 @@ def card_text(summary: list[list[dict]], revenue_rows: list[list[dict]], users_r
         "**数据状态**\n"
         f"血量：{display_status(revenue_status)}\n"
         f"360新增：{display_status(users_status)}"
-        f"{fallback_note}\n\n[查看日进度追踪]({SHEET_URL})"
+        f"\n\n[查看日进度追踪]({SHEET_URL})"
     )
 
 
