@@ -118,16 +118,14 @@ def card_text(summary: list[list[dict]], revenue_rows: list[list[dict]], users_r
     )
 
 
-def send_card(text: str) -> int:
+def send_report(text: str) -> int:
     body = json.dumps(
         {
-            "msgtype": "card",
-            "card": {
-                "header": {
-                    "title": {"tag": "text", "content": {"type": "plainText", "text": "日血量进度播报"}},
-                    "subtitle": {"tag": "text", "content": {"type": "plainText", "text": datetime.now(BJ_TZ).strftime("%Y-%m-%d")}},
-                },
-                "elements": [{"tag": "text", "content": {"tag": "markdown", "text": text}}],
+            # WPS renders this documented Markdown schema reliably; the card
+            # body schema accepted the request but displayed no body content.
+            "msgtype": "markdown",
+            "markdown": {
+                "text": f"## 日血量进度播报\n{datetime.now(BJ_TZ).strftime('%Y-%m-%d')}\n\n{text}",
             },
         },
         ensure_ascii=False,
@@ -146,11 +144,10 @@ def send_card(text: str) -> int:
     response.raise_for_status()
     return response.status_code
 
-
 def main() -> None:
     summary, revenue_rows, users_rows = request_values()
     text = card_text(summary, revenue_rows, users_rows)
-    status = send_card(text)
+    status = send_report(text)
     # Keep logs useful while never exposing secrets or webhook addresses.
     print(f"WPS daily-progress card sent successfully (HTTP {status}).")
 

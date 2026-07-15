@@ -1,6 +1,6 @@
 # WPS 日进度 GitHub Actions
 
-工作流 `.github/workflows/daily-progress.yml` 在每个工作日北京时间 10:00 发送一次日进度卡片；也可在 Actions 页面手动运行。它只读取 Google 表格中已有的公式结果，不修改表格，也不使用任何 AI 服务。
+工作流 `.github/workflows/daily-progress.yml` 在每个工作日北京时间 10:00 发送一次日进度播报；也可在 Actions 页面手动运行。它只读取 Google 表格中已有的公式结果，不修改表格，也不使用任何 AI 服务。
 
 在仓库 **Settings → Secrets and variables → Actions** 中添加以下 Secrets：
 
