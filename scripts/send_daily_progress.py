@@ -7,17 +7,14 @@ call an AI service or alter the spreadsheet.
 
 from __future__ import annotations
 
-import hashlib
+import argparse
 import json
-import os
 import sys
-from datetime import datetime, timezone
-from email.utils import format_datetime
+from pathlib import Path
 from zoneinfo import ZoneInfo
 
 import google.auth.transport.requests
 from google.oauth2 import service_account
-import requests
 
 
 SPREADSHEET_ID = "1vSBU84SFoVlXdaczYYAev8mC0PEfjRQyVSv8s2OAGW4"
@@ -118,47 +115,16 @@ def card_text(summary: list[list[dict]], revenue_rows: list[list[dict]], users_r
     )
 
 
-def send_report(text: str) -> int:
-    body = json.dumps(
-        {
-            "msgtype": "card",
-            "card": {
-                "header": {
-                    "title": {"tag": "text", "content": {"type": "plainText", "text": "日血量进度播报"}},
-                    "subtitle": {"tag": "text", "content": {"type": "plainText", "text": datetime.now(BJ_TZ).strftime("%Y-%m-%d")}},
-                },
-                "elements": [
-                    {
-                        "tag": "text",
-                        # WPS card elements require content.type, not content.tag.
-                        "content": {"type": "markdown", "text": text},
-                    }
-                ],
-            },
-        },
-        ensure_ascii=False,
-        separators=(",", ":"),
-    ).encode("utf-8")
-    headers = {"Content-Type": "application/json"}
-    key, secret = os.environ.get("WPS_WEBHOOK_KEY"), os.environ.get("WPS_WEBHOOK_SECRET")
-    if bool(key) != bool(secret):
-        raise RuntimeError("WPS_WEBHOOK_KEY and WPS_WEBHOOK_SECRET must be set together.")
-    if key and secret:
-        content_md5 = hashlib.md5(body).hexdigest()
-        date = format_datetime(datetime.now(timezone.utc), usegmt=True)
-        signature = hashlib.sha1(f"{secret}{content_md5}application/json{date}".encode("utf-8")).hexdigest()
-        headers.update({"Content-Md5": content_md5, "DATE": date, "Authorization": f"{key}:{signature}"})
-    response = requests.post(required("WPS_WEBHOOK_URL"), data=body, headers=headers, timeout=30)
-    response.raise_for_status()
-    return response.status_code
-
 def main() -> None:
+    parser = argparse.ArgumentParser(description="Prepare WPS daily-progress card content.")
+    parser.add_argument("--output", required=True, help="UTF-8 file path for the WPS card body")
+    args = parser.parse_args()
+
     summary, revenue_rows, users_rows = request_values()
     text = card_text(summary, revenue_rows, users_rows)
-    status = send_report(text)
-    # Keep logs useful while never exposing secrets or webhook addresses.
-    print(f"WPS daily-progress card sent successfully (HTTP {status}).")
-
+    Path(args.output).write_text(text, encoding="utf-8")
+    # Do not print the card body or any secret into Actions logs.
+    print("WPS daily-progress content prepared.")
 
 if __name__ == "__main__":
     try:
