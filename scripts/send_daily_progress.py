@@ -121,11 +121,19 @@ def card_text(summary: list[list[dict]], revenue_rows: list[list[dict]], users_r
 def send_report(text: str) -> int:
     body = json.dumps(
         {
-            # WPS renders this documented Markdown schema reliably; the card
-            # body schema accepted the request but displayed no body content.
-            "msgtype": "markdown",
-            "markdown": {
-                "text": f"## 日血量进度播报\n{datetime.now(BJ_TZ).strftime('%Y-%m-%d')}\n\n{text}",
+            "msgtype": "card",
+            "card": {
+                "header": {
+                    "title": {"tag": "text", "content": {"type": "plainText", "text": "日血量进度播报"}},
+                    "subtitle": {"tag": "text", "content": {"type": "plainText", "text": datetime.now(BJ_TZ).strftime("%Y-%m-%d")}},
+                },
+                "elements": [
+                    {
+                        "tag": "text",
+                        # WPS card elements require content.type, not content.tag.
+                        "content": {"type": "markdown", "text": text},
+                    }
+                ],
             },
         },
         ensure_ascii=False,
