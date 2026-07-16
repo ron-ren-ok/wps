@@ -2,8 +2,8 @@ name: WPS daily progress
 
 on:
   schedule:
-    # 10:30 Beijing time (02:30 UTC), every day.
-    - cron: '30 2 * * *'
+    # 07:00 Beijing time (23:00 UTC on the preceding day), every day.
+    - cron: '0 23 * * *'
   workflow_dispatch:
 
 permissions:
